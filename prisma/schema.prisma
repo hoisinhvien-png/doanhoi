@@ -1,0 +1,91 @@
+// Sơ đồ cơ sở dữ liệu – Hệ thống theo dõi hoạt động Đoàn – Hội, Trường ĐH Hà Tĩnh
+// Dựa trên tài liệu đặc tả, mục II, có bổ sung (ghi chú "Bổ sung" bên dưới).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Vai trò người dùng
+enum Role {
+  ADMIN   // Đoàn trường
+  LCD     // Liên chi Đoàn khoa
+  STUDENT // Sinh viên
+}
+
+/// Trạng thái lượt đăng ký sự kiện
+enum ParticipationStatus {
+  PENDING   // Đang chờ duyệt
+  CONFIRMED // Đã duyệt
+  REJECTED  // Bổ sung: LCĐ từ chối
+}
+
+/// Bảng 1: Người dùng & Sinh viên
+model User {
+  id                 String    @id @default(cuid())
+  studentId          String?   @unique // Mã SV; để trống với tài khoản Đoàn trường, LCĐ
+  name               String
+  dob                DateTime? @db.Date
+  className          String?   // Lớp sinh hoạt
+  faculty            String?   // Khoa; với tài khoản LCĐ là khoa được quản lý
+  role               Role      @default(STUDENT)
+  email              String?   @unique // Đăng nhập cho Đoàn trường, LCĐ
+  password           String    // Mật khẩu đã băm bằng bcrypt
+  mustChangePassword Boolean   @default(true) // Bổ sung: bắt đổi mật khẩu lần đầu
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  participations EventParticipation[] @relation("Participant")
+  approvals      EventParticipation[] @relation("Approver")
+  createdEvents  Event[]
+
+  @@index([faculty])
+  @@index([className])
+}
+
+/// Bảng 2: Sự kiện
+model Event {
+  id               String   @id @default(cuid())
+  title            String
+  date             DateTime // Ngày giờ diễn ra
+  description      String?  @db.Text
+  location         String?  // Bổ sung: địa điểm
+  faculty          String?  // Bổ sung: để trống = sự kiện toàn trường
+  registrationOpen Boolean  @default(true) // Bổ sung: mở/đóng đăng ký
+  createdById      String?
+  createdBy        User?    @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt        DateTime @default(now())
+
+  participations EventParticipation[]
+
+  @@index([date])
+}
+
+/// Bảng 3: Lịch sử đăng ký
+model EventParticipation {
+  id            String              @id @default(cuid())
+  userId        String // Trỏ tới User.id (đặc tả gọi là studentId)
+  user          User                @relation("Participant", fields: [userId], references: [id], onDelete: Cascade)
+  eventId       String
+  event         Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status        ParticipationStatus @default(PENDING)
+  confirmedById String? // Cán bộ LCĐ đã duyệt
+  confirmedBy   User?               @relation("Approver", fields: [confirmedById], references: [id], onDelete: SetNull)
+  confirmedAt   DateTime? // Bổ sung: thời điểm duyệt
+  createdAt     DateTime            @default(now()) // Thời gian bấm đăng ký
+
+  @@unique([userId, eventId]) // Một sinh viên chỉ đăng ký một sự kiện một lần
+  @@index([status])
+}
+
+/// Bổ sung: ngưỡng xếp loại đoàn viên, Đoàn trường sửa được trên web
+model GradingRule {
+  id       String @id @default(cuid())
+  label    String @unique // Ví dụ: Khá, Trung bình, Yếu
+  minScore Float  // Điểm tối thiểu (thang 10)
+  order    Int    // Thứ tự hiển thị, mức cao nhất = 1
+}
