@@ -55,8 +55,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* Màu chính: xanh Trường ĐH Hà Tĩnh (#0b4f9c) */
-  --primary: #0b4f9c;
+  /* Màu chính: xanh Đoàn (#0072bc), trùng banner trang chủ */
+  --primary: #0072bc;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);

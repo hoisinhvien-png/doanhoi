@@ -58,7 +58,7 @@ export function NavLinks({
             className={cn(
               "flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-[#0b4f9c] text-white"
+                ? "bg-[#0072bc] text-white"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >

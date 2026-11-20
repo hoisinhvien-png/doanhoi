@@ -20,7 +20,7 @@ export async function buildSheet(opts: {
   // Dòng 1-2: tiêu đề và mô tả
   ws.mergeCells(1, 1, 1, n);
   ws.getCell(1, 1).value = opts.title;
-  ws.getCell(1, 1).font = { bold: true, size: 14, color: { argb: "FF0B4F9C" } };
+  ws.getCell(1, 1).font = { bold: true, size: 14, color: { argb: "FF0072BC" } };
   if (opts.subtitle) {
     ws.mergeCells(2, 1, 2, n);
     ws.getCell(2, 1).value = opts.subtitle;
@@ -33,7 +33,7 @@ export async function buildSheet(opts: {
     const cell = headerRow.getCell(i + 1);
     cell.value = c.header;
     cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
-    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0B4F9C" } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0072BC" } };
     cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
     ws.getColumn(i + 1).width = c.width ?? Math.max(12, c.header.length + 4);
   });

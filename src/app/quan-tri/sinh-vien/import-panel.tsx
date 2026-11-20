@@ -19,7 +19,7 @@ export function ImportPanel({ faculties }: { faculties: string[] }) {
         <h2 className="text-lg font-semibold">Nhập danh sách từ Excel</h2>
         <a
           href="/api/excel/mau-sinh-vien"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0b4f9c] hover:underline dark:text-sky-400"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0072bc] hover:underline dark:text-sky-400"
         >
           <Download className="size-4" /> Tải file mẫu
         </a>

@@ -1,9 +1,9 @@
-import Image from "next/image";
 import { Suspense, type ReactNode } from "react";
 import { LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { NavLinks } from "@/components/nav-links";
+import { BrandFooter, BrandHeader } from "@/components/brand-header";
 import { requireRole } from "@/lib/dal";
 import { ROLE_LABEL, ROLE_MENU, type RoleName } from "@/lib/roles";
 
@@ -11,22 +11,17 @@ import { ROLE_LABEL, ROLE_MENU, type RoleName } from "@/lib/roles";
 export function AppShell({ role, children }: { role: RoleName; children: ReactNode }) {
   const menu = ROLE_MENU[role];
   return (
-    <div className="flex min-h-full flex-1 flex-col bg-muted/40">
-      <header className="sticky top-0 z-10 bg-[#0b4f9c] text-white">
-        <div className="flex items-center justify-between gap-3 px-4 py-2">
-          <Image
-            src="/logo-htu.png"
-            alt="Logo Trường Đại học Hà Tĩnh"
-            width={495}
-            height={90}
-            priority
-            className="h-10 w-auto"
-          />
+    <div className="flex min-h-full flex-1 flex-col bg-gradient-to-b from-sky-50 via-white to-white dark:from-slate-950 dark:via-background dark:to-background">
+      {/* Cùng banner với trang chủ */}
+      <BrandHeader
+        wide
+        sticky
+        right={
           <Suspense fallback={<div className="h-9 w-40 animate-pulse rounded bg-white/10" />}>
             <UserBox role={role} />
           </Suspense>
-        </div>
-      </header>
+        }
+      />
 
       {/* Điện thoại: menu ngang */}
       <div className="border-b bg-background pt-2 md:hidden">
@@ -47,6 +42,7 @@ export function AppShell({ role, children }: { role: RoleName; children: ReactNo
           </Suspense>
         </main>
       </div>
+      <BrandFooter />
     </div>
   );
 }

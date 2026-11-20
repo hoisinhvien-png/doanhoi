@@ -83,7 +83,7 @@ export function EventForm({
           type="checkbox"
           name="registrationOpen"
           defaultChecked={initial?.registrationOpen ?? true}
-          className="size-4 accent-[#0b4f9c]"
+          className="size-4 accent-[#0072bc]"
         />
         Mở đăng ký cho sinh viên
       </label>

@@ -12,8 +12,8 @@ export function AuthCard({
   children: ReactNode;
 }) {
   return (
-    <div className="flex flex-1 flex-col bg-gradient-to-b from-sky-50 to-white dark:from-slate-950 dark:to-background">
-      <BrandHeader size="md" />
+    <div className="flex flex-1 flex-col bg-gradient-to-b from-sky-50 via-white to-white dark:from-slate-950 dark:via-background dark:to-background">
+      <BrandHeader />
       <main className="flex flex-1 items-start justify-center px-4 py-10 sm:items-center">
         <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
           <h1 className="text-xl font-bold">{title}</h1>
