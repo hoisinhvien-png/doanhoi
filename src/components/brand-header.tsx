@@ -55,10 +55,32 @@ export function BrandHeader({
   );
 }
 
+/** Người phụ trách hiển thị ở chân trang (sđt: chỉ chữ số, dùng cho liên kết gọi điện) */
+const CREDITS = [
+  { label: "Quản lý", name: "Nguyễn Quốc Dũng", phone: "0946582194" },
+  { label: "Thiết kế & lập trình", name: "Nguyễn Đức Sử", phone: "0914566838" },
+];
+
+/** 0914566838 → 0914 566 838 cho dễ đọc */
+function formatPhone(p: string) {
+  return p.length === 10 ? `${p.slice(0, 4)} ${p.slice(4, 7)} ${p.slice(7)}` : p;
+}
+
 export function BrandFooter() {
   return (
     <footer className="bg-[#005a96] px-4 py-5 text-center text-sm text-white/90">
-      Văn phòng Đoàn – Hội, tầng 1, nhà Hiệu bộ, trường Đại học Hà Tĩnh
+      <p>Văn phòng Đoàn – Hội, tầng 1, nhà Hiệu bộ, trường Đại học Hà Tĩnh</p>
+      <div className="mx-auto mt-3 flex max-w-6xl flex-col items-center gap-1 border-t border-white/15 pt-3 text-xs text-white/75 sm:flex-row sm:justify-center sm:gap-6">
+        {CREDITS.map((c) => (
+          <p key={c.label}>
+            {c.label}: <span className="font-semibold text-white/90">{c.name}</span>
+            {" · ĐT "}
+            <a href={`tel:${c.phone}`} className="underline-offset-2 hover:text-white hover:underline">
+              {formatPhone(c.phone)}
+            </a>
+          </p>
+        ))}
+      </div>
     </footer>
   );
 }
