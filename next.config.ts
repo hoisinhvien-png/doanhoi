@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "4mb" },
   },
   partialPrefetching: true,
+  // Trang "Duyệt đăng ký" cũ đã thay bằng "Các sự kiện" (Bổ sung 20/11/2026)
+  async redirects() {
+    return [{ source: "/lien-chi/duyet", destination: "/lien-chi/su-kien", permanent: false }];
+  },
   turbopack: {
     rules: {
       "*.css": {

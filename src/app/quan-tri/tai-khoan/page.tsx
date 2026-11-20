@@ -20,7 +20,7 @@ export default async function AccountsPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-bold">Tài khoản Liên chi Đoàn</h1>
-        <p className="text-muted-foreground">Mỗi tài khoản LCĐ chỉ xem và duyệt sinh viên của khoa được gán.</p>
+        <p className="text-muted-foreground">Mỗi tài khoản LCĐ chỉ xem và xác nhận tham gia cho sinh viên của khoa được gán.</p>
       </div>
 
       <section className="rounded-xl border bg-background p-4">
@@ -39,7 +39,7 @@ export default async function AccountsPage() {
                 <div>
                   <p className="font-medium">{a.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {a.email} · Khoa {a.faculty ?? "(chưa gán)"} · đã duyệt {a._count.approvals} lượt
+                    {a.email} · Khoa {a.faculty ?? "(chưa gán)"} · đã xác nhận {a._count.approvals} lượt
                     {a.mustChangePassword ? " · chưa đổi mật khẩu" : ""}
                   </p>
                 </div>
@@ -47,7 +47,7 @@ export default async function AccountsPage() {
                   <ResetLcdButton userId={a.id} />
                   <ConfirmButton
                     action={deleteLcdAccount.bind(null, a.id)}
-                    message={`Xoá tài khoản ${a.email}? Các lượt LCĐ này đã duyệt vẫn được giữ.`}
+                    message={`Xoá tài khoản ${a.email}? Các lượt LCĐ này đã xác nhận vẫn được giữ.`}
                     variant="destructive"
                     size="sm"
                   >

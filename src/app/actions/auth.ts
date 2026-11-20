@@ -9,7 +9,7 @@ import { ROLE_HOME } from "@/lib/roles";
 
 export type FormState = { error?: string } | undefined;
 
-/** Đăng nhập bằng Mã sinh viên hoặc email + mật khẩu */
+/** Đăng nhập bằng email, tên tài khoản (vd DIEUTH2025_NN) hoặc mã sinh viên + mật khẩu */
 export async function login(_prev: FormState, formData: FormData): Promise<FormState> {
   const identifier = String(formData.get("identifier") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -20,12 +20,20 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   const user = await prisma.user.findFirst({
     where: identifier.includes("@")
       ? { email: { equals: identifier, mode: "insensitive" } }
-      : { studentId: { equals: identifier, mode: "insensitive" } },
+      : {
+          OR: [
+            { username: { equals: identifier, mode: "insensitive" } },
+            { studentId: { equals: identifier, mode: "insensitive" } },
+          ],
+        },
   });
 
   // Báo lỗi chung, không tiết lộ tài khoản có tồn tại hay không
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return { error: "Tài khoản hoặc mật khẩu không đúng." };
+  }
+  if (user.locked) {
+    return { error: "Tài khoản đang bị khoá. Vui lòng liên hệ Văn phòng Đoàn – Hội." };
   }
 
   await createSession({
@@ -39,7 +47,7 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
 /** Đổi mật khẩu (bắt buộc ở lần đăng nhập đầu) */
 export async function changePassword(_prev: FormState, formData: FormData): Promise<FormState> {
   const me = await getCurrentUser();
-  if (!me) redirect("/dang-nhap");
+  if (!me) redirect("/dang-xuat");
 
   const current = String(formData.get("current") ?? "");
   const next = String(formData.get("next") ?? "");

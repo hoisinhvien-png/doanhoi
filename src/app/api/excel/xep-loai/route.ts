@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   const rows = await computeGrades({ from, to, faculty: khoa, className: lop });
   const buf = await buildSheet({
     title: "KẾT QUẢ ĐÁNH GIÁ XẾP LOẠI ĐOÀN VIÊN",
-    subtitle: `Từ ${formatDate(from)} đến ${formatDate(to)}${khoa ? ` · Khoa ${khoa}` : ""}${lop ? ` · Lớp ${lop}` : ""} · Điểm = số sự kiện được duyệt ÷ số sự kiện được tham gia × 10`,
+    subtitle: `Từ ${formatDate(from)} đến ${formatDate(to)}${khoa ? ` · Khoa ${khoa}` : ""}${lop ? ` · Lớp ${lop}` : ""} · Điểm = số sự kiện Tham gia ÷ số sự kiện được tham gia × 10`,
     sheetName: "Xếp loại",
     columns: [
       { header: "STT", key: "stt", width: 6 },
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       { header: "Họ và tên", key: "name", width: 28 },
       { header: "Lớp", key: "className", width: 16 },
       { header: "Khoa", key: "faculty", width: 24 },
-      { header: "Số SK được duyệt", key: "confirmed", width: 12 },
+      { header: "Số SK tham gia", key: "confirmed", width: 12 },
       { header: "Số SK được tham gia", key: "eligible", width: 12 },
       { header: "Điểm", key: "score", width: 8 },
       { header: "Xếp loại", key: "grade", width: 16 },

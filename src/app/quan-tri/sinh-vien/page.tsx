@@ -4,11 +4,15 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
 import { getFaculties } from "@/lib/queries";
 import { formatDate } from "@/lib/format";
-import { resetStudentPassword } from "@/app/actions/students";
-import { Button } from "@/components/ui/button";
+import { Lock, UserPlus } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 import { ImportPanel } from "./import-panel";
 
 const PAGE_SIZE = 50;
+
+// Nhập một lần cả nghìn sinh viên (băm mật khẩu ban đầu) mất khoảng 30 giây;
+// cho phép server action trên trang này chạy tới 60 giây.
+export const maxDuration = 60;
 
 export default async function AdminStudentsPage({ searchParams }: PageProps<"/quan-tri/sinh-vien">) {
   await requireRole("ADMIN");
@@ -24,6 +28,7 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
       ? {
           OR: [
             { studentId: { contains: q, mode: "insensitive" } },
+            { username: { contains: q, mode: "insensitive" } },
             { name: { contains: q, mode: "insensitive" } },
             { className: { contains: q, mode: "insensitive" } },
           ],
@@ -38,7 +43,7 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
       orderBy: [{ faculty: "asc" }, { className: "asc" }, { studentId: "asc" }],
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      select: { id: true, studentId: true, name: true, dob: true, className: true, faculty: true, mustChangePassword: true },
+      select: { id: true, studentId: true, username: true, name: true, dob: true, className: true, faculty: true, locked: true },
     }),
   ]);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -47,9 +52,14 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">Sinh viên</h1>
-        <p className="text-muted-foreground">{total} sinh viên</p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Sinh viên</h1>
+          <p className="text-muted-foreground">{total} sinh viên</p>
+        </div>
+        <Link href="/quan-tri/sinh-vien/moi" className={buttonVariants({ className: "h-10 px-4" })}>
+          <UserPlus className="size-4" /> Đăng ký tài khoản mới
+        </Link>
       </div>
 
       <ImportPanel faculties={faculties} />
@@ -59,7 +69,7 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
           <input
             name="q"
             defaultValue={q}
-            placeholder="Tìm mã SV, họ tên, lớp…"
+            placeholder="Tìm mã SV, tên tài khoản, họ tên, lớp…"
             className="h-9 min-w-56 flex-1 rounded-lg border border-input bg-background px-3 text-sm"
           />
           <select name="khoa" defaultValue={khoa} className="h-9 rounded-lg border border-input bg-background px-2 text-sm">
@@ -76,34 +86,35 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
             <thead className="bg-muted/60 text-left">
               <tr>
                 <th className="px-3 py-2 font-medium">Mã SV</th>
+                <th className="px-3 py-2 font-medium">Tên tài khoản</th>
                 <th className="px-3 py-2 font-medium">Họ tên</th>
                 <th className="px-3 py-2 font-medium">Ngày sinh</th>
                 <th className="px-3 py-2 font-medium">Lớp</th>
                 <th className="px-3 py-2 font-medium">Khoa</th>
-                <th className="px-3 py-2 font-medium">Mật khẩu</th>
+                <th className="px-3 py-2 font-medium"></th>
               </tr>
             </thead>
             <tbody>
               {students.length === 0 && (
-                <tr><td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">Không có sinh viên phù hợp.</td></tr>
+                <tr><td colSpan={7} className="px-3 py-8 text-center text-muted-foreground">Không có sinh viên phù hợp.</td></tr>
               )}
               {students.map((s) => (
-                <tr key={s.id} className="border-t">
+                <tr key={s.id} className={s.locked ? "border-t bg-muted/50 text-muted-foreground" : "border-t"}>
                   <td className="px-3 py-2">{s.studentId}</td>
-                  <td className="px-3 py-2 font-medium">{s.name}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{s.username}</td>
+                  <td className="px-3 py-2 font-medium">
+                    <span className="inline-flex items-center gap-1.5">
+                      {s.locked && <Lock className="size-3.5" aria-label="Đã khoá" />}
+                      {s.name}
+                    </span>
+                  </td>
                   <td className="px-3 py-2">{s.dob ? formatDate(s.dob) : ""}</td>
                   <td className="px-3 py-2">{s.className}</td>
                   <td className="px-3 py-2">{s.faculty}</td>
-                  <td className="px-3 py-2">
-                    {s.mustChangePassword ? (
-                      <span className="text-xs text-muted-foreground">Chưa đổi</span>
-                    ) : (
-                      <form action={resetStudentPassword.bind(null, s.id)}>
-                        <Button type="submit" variant="ghost" size="xs" title="Đặt lại mật khẩu về ngày sinh">
-                          Đặt lại
-                        </Button>
-                      </form>
-                    )}
+                  <td className="px-3 py-2 text-right">
+                    <Link href={`/quan-tri/sinh-vien/${s.id}`} className={buttonVariants({ variant: "outline", size: "xs" })}>
+                      Sửa / Khoá / Xoá
+                    </Link>
                   </td>
                 </tr>
               ))}

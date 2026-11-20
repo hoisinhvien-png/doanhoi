@@ -28,7 +28,7 @@ export default async function GradingPage({ searchParams }: PageProps<"/quan-tri
       <div>
         <h1 className="text-2xl font-bold">Đánh giá xếp loại đoàn viên</h1>
         <p className="text-sm text-muted-foreground">
-          Điểm = số sự kiện được duyệt ÷ số sự kiện sinh viên được tham gia (toàn trường + khoa mình) trong khoảng thời gian × 10.
+          Điểm = số sự kiện Tham gia ÷ số sự kiện sinh viên được tham gia (toàn trường + khoa mình) trong khoảng thời gian × 10.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default async function GradingPage({ searchParams }: PageProps<"/quan-tri
                   <th className="px-3 py-2 font-medium">Họ tên</th>
                   <th className="px-3 py-2 font-medium">Lớp</th>
                   <th className="px-3 py-2 font-medium">Khoa</th>
-                  <th className="px-3 py-2 text-right font-medium">Được duyệt / Được tham gia</th>
+                  <th className="px-3 py-2 text-right font-medium">Tham gia / Được tham gia</th>
                   <th className="px-3 py-2 text-right font-medium">Điểm</th>
                   <th className="px-3 py-2 font-medium">Xếp loại</th>
                 </tr>

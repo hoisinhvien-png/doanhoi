@@ -40,12 +40,12 @@ export const ROLE_MENU: Record<RoleName, MenuItem[]> = {
   ],
   LCD: [
     { href: "/lien-chi", label: "Tổng quan khoa", icon: "layout-dashboard" },
-    { href: "/lien-chi/duyet", label: "Duyệt đăng ký", icon: "check-square" },
+    { href: "/lien-chi/su-kien", label: "Các sự kiện", icon: "calendar" },
     { href: "/lien-chi/sinh-vien", label: "Sinh viên khoa", icon: "users" },
     { href: "/lien-chi/bao-cao", label: "Xuất Excel", icon: "file-spreadsheet" },
   ],
   STUDENT: [
-    { href: "/sinh-vien", label: "Sự kiện đang mở", icon: "calendar" },
+    { href: "/sinh-vien", label: "Sự kiện & xếp loại", icon: "calendar" },
     { href: "/sinh-vien/lich-su", label: "Lịch sử tham gia", icon: "history" },
     { href: "/sinh-vien/ho-so", label: "Hồ sơ", icon: "user" },
   ],

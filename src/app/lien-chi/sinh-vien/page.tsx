@@ -71,8 +71,8 @@ export default async function LcdStudentsPage({ searchParams }: PageProps<"/lien
               <th className="px-3 py-2 font-medium">Họ tên</th>
               <th className="px-3 py-2 font-medium">Ngày sinh</th>
               <th className="px-3 py-2 font-medium">Lớp</th>
-              <th className="px-3 py-2 text-right font-medium">Đã duyệt</th>
-              <th className="px-3 py-2 text-right font-medium">Chờ duyệt</th>
+              <th className="px-3 py-2 text-right font-medium">Đăng ký</th>
+              <th className="px-3 py-2 text-right font-medium">Tham gia</th>
             </tr>
           </thead>
           <tbody>
@@ -87,8 +87,8 @@ export default async function LcdStudentsPage({ searchParams }: PageProps<"/lien
                   <td className="px-3 py-2 font-medium">{s.name}</td>
                   <td className="px-3 py-2">{s.dob ? formatDate(s.dob) : ""}</td>
                   <td className="px-3 py-2">{s.className}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{s.participations.length}</td>
                   <td className="px-3 py-2 text-right tabular-nums">{n("CONFIRMED")}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{n("PENDING")}</td>
                 </tr>
               );
             })}

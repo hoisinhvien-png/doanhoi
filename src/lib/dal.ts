@@ -22,9 +22,13 @@ export const getCurrentUser = cache(async () => {
       className: true,
       studentId: true,
       email: true,
+      username: true,
       mustChangePassword: true,
+      locked: true,
     },
   });
+  // Tài khoản bị khoá giữa chừng: coi như đã đăng xuất
+  if (!user || user.locked) return null;
   return user;
 });
 
@@ -33,7 +37,9 @@ export type CurrentUser = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>
 /** Bắt buộc đăng nhập đúng vai trò; sai thì chuyển về trang phù hợp. */
 export async function requireRole(role: RoleName): Promise<CurrentUser> {
   const user = await getCurrentUser();
-  if (!user) redirect("/dang-nhap");
+  // Không còn tài khoản hợp lệ (bị khoá/xoá, phiên hết hạn): xoá cookie rồi về trang đăng nhập.
+  // Phải qua /dang-xuat, nếu không proxy thấy cookie cũ sẽ đẩy qua lại mãi.
+  if (!user) redirect("/dang-xuat");
   if (user.mustChangePassword) redirect("/doi-mat-khau");
   if (user.role !== role) redirect(ROLE_HOME[user.role]);
   return user;

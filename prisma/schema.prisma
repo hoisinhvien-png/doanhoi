@@ -17,17 +17,22 @@ enum Role {
   STUDENT // Sinh viên
 }
 
-/// Trạng thái lượt đăng ký sự kiện
+/// Trạng thái lượt đăng ký sự kiện.
+/// Từ 20/11/2026 hệ thống chỉ dùng 2 trạng thái: "Tham gia" (CONFIRMED) và "Không tham gia" (PENDING).
+/// Đăng ký xong mặc định là Không tham gia; LCĐ xác nhận Tham gia trong 7 ngày sau sự kiện.
+/// REJECTED là dữ liệu cũ, hiển thị như Không tham gia (giữ lại để không phải đổi kiểu dữ liệu).
 enum ParticipationStatus {
-  PENDING   // Đang chờ duyệt
-  CONFIRMED // Đã duyệt
-  REJECTED  // Bổ sung: LCĐ từ chối
+  PENDING   // Không tham gia
+  CONFIRMED // Tham gia
+  REJECTED  // (cũ) Không tham gia
 }
 
 /// Bảng 1: Người dùng & Sinh viên
 model User {
   id                 String    @id @default(cuid())
   studentId          String?   @unique // Mã SV; để trống với tài khoản Đoàn trường, LCĐ
+  username           String?   @unique // Bổ sung: tên tài khoản sinh viên, vd DIEUTH2025_NN
+  locked             Boolean   @default(false) // Bổ sung: tài khoản bị khoá, không đăng nhập được
   name               String
   dob                DateTime? @db.Date
   className          String?   // Lớp sinh hoạt

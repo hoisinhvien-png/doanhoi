@@ -1,5 +1,5 @@
-// Số liệu cho Dashboard. "Tỷ lệ tham gia" = % sinh viên có ít nhất 1 sự kiện được duyệt
-// trong năm học (trọn năm: 01/09 tới 31/08 năm sau, gồm cả sự kiện sắp diễn ra).
+// Số liệu cho Dashboard. "Tỷ lệ tham gia" = % sinh viên có ít nhất 1 sự kiện Tham gia
+// trong năm học (trọn năm: 01/08 tới 31/07 năm sau, gồm cả sự kiện sắp diễn ra).
 import "server-only";
 import { prisma } from "./prisma";
 import { defaultRange, parseDateInput } from "./grading";
@@ -7,8 +7,8 @@ import { defaultRange, parseDateInput } from "./grading";
 export function schoolYear(now: Date) {
   const y = Number(defaultRange(now).from.slice(0, 4));
   return {
-    from: parseDateInput(`${y}-09-01`)!,
-    to: parseDateInput(`${y + 1}-08-31`, true)!,
+    from: parseDateInput(`${y}-08-01`)!,
+    to: parseDateInput(`${y + 1}-07-31`, true)!,
     label: `${y}–${y + 1}`,
   };
 }
@@ -49,7 +49,7 @@ export async function participationRates(from: Date, to: Date, faculty?: string)
 
 export type MonthRow = { month: string; count: number };
 
-/** Số lượt tham gia được duyệt theo tháng (theo ngày diễn ra sự kiện, giờ VN) */
+/** Số lượt Tham gia theo tháng (theo ngày diễn ra sự kiện, giờ VN) */
 export async function monthlyConfirmed(from: Date, to: Date, faculty?: string): Promise<MonthRow[]> {
   const rows = await prisma.$queryRaw<{ ym: string; n: bigint }[]>`
     SELECT to_char((e.date AT TIME ZONE 'UTC') AT TIME ZONE 'Asia/Ho_Chi_Minh', 'YYYY-MM') AS ym,

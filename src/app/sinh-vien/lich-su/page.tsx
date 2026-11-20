@@ -17,7 +17,7 @@ export default async function StudentHistoryPage() {
       <div>
         <h1 className="text-2xl font-bold">Lịch sử tham gia</h1>
         <p className="text-muted-foreground">
-          {rows.length} lượt đăng ký · {confirmed} lượt đã được duyệt
+          {rows.length} lượt đăng ký · {confirmed} lượt tham gia
         </p>
       </div>
 

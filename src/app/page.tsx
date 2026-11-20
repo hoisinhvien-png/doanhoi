@@ -1,86 +1,73 @@
-import Image from "next/image";
-import { CalendarCheck, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ArrowRight, GraduationCap, ShieldCheck, Users } from "lucide-react";
+import { BrandFooter, BrandHeader } from "@/components/brand-header";
 
-// Ba vai trò của hệ thống (theo tài liệu đặc tả)
+// Ba thẻ đăng nhập theo vai trò (Bổ sung 20/11/2026)
 const roles = [
   {
+    key: "quan-ly",
     icon: ShieldCheck,
-    title: "Đoàn trường",
-    desc: "Thống kê toàn trường, quản lý sự kiện, đánh giá xếp loại đoàn viên, xuất báo cáo Excel.",
+    title: "Quản lý",
+    desc: "Đoàn trường: quản lý sự kiện, sinh viên, đánh giá xếp loại và báo cáo toàn trường.",
+    accent: "from-[#0072bc] to-[#0094d9]",
   },
   {
+    key: "lien-chi",
     icon: Users,
-    title: "Liên chi Đoàn khoa",
-    desc: "Theo dõi sinh viên trong khoa, duyệt lượt đăng ký sự kiện, xuất danh sách theo lớp.",
+    title: "Liên chi Đoàn",
+    desc: "Theo dõi sự kiện, xác nhận sinh viên tham gia và xuất danh sách của khoa.",
+    accent: "from-[#0094d9] to-[#00b3c7]",
   },
   {
-    icon: CalendarCheck,
+    key: "sinh-vien",
+    icon: GraduationCap,
     title: "Sinh viên",
-    desc: "Cập nhật hồ sơ, đăng ký sự kiện đang mở, xem lịch sử và trạng thái duyệt.",
+    desc: "Xem sự kiện trong năm học, đăng ký tham gia và theo dõi xếp loại đoàn viên.",
+    accent: "from-[#00a8b5] to-[#22c08a]",
   },
 ];
 
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col bg-muted/40">
-      {/* Thanh đầu trang: nền xanh để logo chữ trắng của trường hiển thị rõ */}
-      <header className="bg-[#0b4f9c] text-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-          <Image
-            src="/logo-htu.png"
-            alt="Logo Trường Đại học Hà Tĩnh"
-            width={495}
-            height={90}
-            priority
-            className="h-12 w-auto sm:h-14"
-          />
-        </div>
-      </header>
+    <div className="flex flex-1 flex-col bg-gradient-to-b from-sky-50 via-white to-white dark:from-slate-950 dark:via-background dark:to-background">
+      <BrandHeader />
 
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10 sm:py-16">
         <section className="flex flex-col items-center gap-4 text-center">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-4xl">
-            Hệ thống theo dõi hoạt động Đoàn – Hội
+          <span className="rounded-full bg-[#0072bc]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0072bc] dark:bg-sky-400/10 dark:text-sky-300">
+            Trường Đại học Hà Tĩnh
+          </span>
+          <h1 className="max-w-4xl text-2xl font-extrabold leading-snug tracking-tight text-[#00487a] sm:text-4xl dark:text-sky-100">
+            HỆ THỐNG QUẢN LÝ VÀ THEO DÕI CÁC HOẠT ĐỘNG CỦA ĐOÀN TN – HỘI SV
           </h1>
-          <p className="max-w-2xl text-muted-foreground sm:text-lg">
-            Đăng ký sự kiện, duyệt tham gia và đánh giá đoàn viên trên một nền
-            tảng duy nhất.
-          </p>
-          <Link
-            href="/dang-nhap"
-            className={buttonVariants({
-              size: "lg",
-              className: "mt-2 h-11 px-6 text-base",
-            })}
-          >
-            Đăng nhập
-          </Link>
+          <p className="max-w-2xl text-muted-foreground sm:text-lg">Chọn vai trò của bạn để đăng nhập.</p>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-3">
-          {roles.map(({ icon: Icon, title, desc }) => (
-            <Card key={title}>
-              <CardHeader>
-                <Icon className="mb-2 size-8 text-[#0b4f9c] dark:text-sky-400" />
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{desc}</CardDescription>
-              </CardHeader>
-            </Card>
+        <section className="grid gap-5 sm:grid-cols-3">
+          {roles.map(({ key, icon: Icon, title, desc, accent }) => (
+            <Link
+              key={key}
+              href={`/dang-nhap?vai-tro=${key}`}
+              className="group flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0072bc]"
+            >
+              <div className={`flex items-center gap-3 bg-gradient-to-r ${accent} px-5 py-5 text-white`}>
+                <span className="grid size-12 place-items-center rounded-xl bg-white/20">
+                  <Icon className="size-7" />
+                </span>
+                <span className="text-xl font-bold">{title}</span>
+              </div>
+              <div className="flex flex-1 flex-col gap-4 p-5">
+                <p className="text-sm text-muted-foreground">{desc}</p>
+                <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[#0072bc] dark:text-sky-300">
+                  Đăng nhập <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+                </span>
+              </div>
+            </Link>
           ))}
         </section>
       </main>
 
-      <footer className="border-t py-4 text-center text-sm text-muted-foreground">
-        Đoàn Thanh niên – Hội Sinh viên Trường Đại học Hà Tĩnh
-      </footer>
+      <BrandFooter />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { StatTile } from "@/components/stat-tile";
 import { ChartCard } from "@/components/chart-card";
 import { MonthlyColumnChart, RateBarChart } from "@/components/charts";
 import { UpcomingList } from "@/components/upcoming-list";
+import { CONFIRM_DAYS, lcdWindow } from "@/lib/attendance";
 
 export default async function AdminHome() {
   const me = await requireRole("ADMIN");
@@ -13,15 +14,20 @@ export default async function AdminHome() {
   const sy = schoolYear(now);
   const inYear = { date: { gte: sy.from, lte: sy.to } };
 
-  const [students, eventsYear, confirmedYear, pending, rates, monthly, upcoming] = await Promise.all([
+  const [students, eventsYear, confirmedYear, recent, rates, monthly, upcoming] = await Promise.all([
     prisma.user.count({ where: { role: "STUDENT" } }),
     prisma.event.count({ where: inYear }),
     prisma.eventParticipation.count({ where: { status: "CONFIRMED", event: inYear } }),
-    prisma.eventParticipation.count({ where: { status: "PENDING" } }),
+    // Sự kiện vừa diễn ra, LCĐ còn trong hạn 7 ngày xác nhận
+    prisma.event.findMany({
+      where: { date: { gte: new Date(now.getTime() - (CONFIRM_DAYS + 1) * 86400e3), lte: now } },
+      select: { date: true },
+    }),
     participationRates(sy.from, sy.to),
     monthlyConfirmed(sy.from, sy.to),
     upcomingEvents(now),
   ]);
+  const confirming = recent.filter((e) => lcdWindow(e.date, now) === "open").length;
   const active = rates.reduce((s, r) => s + r.active, 0);
   const overall = students ? Math.round((active / students) * 1000) / 10 : 0;
 
@@ -35,21 +41,21 @@ export default async function AdminHome() {
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatTile label="Sinh viên" value={students} hint={`${overall}% đã tham gia ít nhất 1 sự kiện`} href="/quan-tri/sinh-vien" icon={<Users className="size-4" />} />
         <StatTile label="Sự kiện năm học" value={eventsYear} hint={`${upcoming.length} sự kiện sắp diễn ra`} href="/quan-tri/su-kien" icon={<CalendarDays className="size-4" />} />
-        <StatTile label="Lượt tham gia được duyệt" value={confirmedYear} hint="trong năm học" href="/quan-tri/bao-cao?tt=CONFIRMED" icon={<CheckCircle2 className="size-4" />} />
-        <StatTile label="Đang chờ LCĐ duyệt" value={pending} hint="toàn trường" href="/quan-tri/bao-cao?tt=PENDING" icon={<Clock className="size-4" />} />
+        <StatTile label="Lượt tham gia" value={confirmedYear} hint="trong năm học" href="/quan-tri/bao-cao?tt=CONFIRMED" icon={<CheckCircle2 className="size-4" />} />
+        <StatTile label="Đang trong hạn xác nhận" value={confirming} hint={`sự kiện LCĐ còn ${CONFIRM_DAYS} ngày xác nhận`} href="/quan-tri/su-kien" icon={<Clock className="size-4" />} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
           title="Tỷ lệ tham gia theo khoa"
-          description="% sinh viên có ít nhất 1 sự kiện được duyệt trong năm học"
+          description="% sinh viên có ít nhất 1 sự kiện tham gia trong năm học"
           empty={rates.length === 0 ? "Chưa có sinh viên. Hãy nhập danh sách ở mục Sinh viên." : undefined}
           table={{ headers: ["Khoa", "Sinh viên", "Đã tham gia", "Tỷ lệ (%)"], rows: rates.map((r) => [r.name, r.total, r.active, r.rate]) }}
         >
           <RateBarChart data={rates} />
         </ChartCard>
         <ChartCard
-          title="Lượt tham gia được duyệt theo tháng"
+          title="Lượt tham gia theo tháng"
           description="Tính theo ngày diễn ra sự kiện"
           table={{ headers: ["Tháng", "Lượt"], rows: monthly.map((m) => [m.month, m.count]) }}
         >

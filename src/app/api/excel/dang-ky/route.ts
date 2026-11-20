@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     p.sk && rows[0] && `Sự kiện: ${rows[0].event.title}`,
     p.tu && `Từ ${p.tu.split("-").reverse().join("/")}`,
     p.den && `đến ${p.den.split("-").reverse().join("/")}`,
-    p.tt && `Trạng thái: ${STATUS_LABEL[p.tt as keyof typeof STATUS_LABEL] ?? ""}`,
+    p.tt && `Trạng thái: ${p.tt === "CONFIRMED" ? "Tham gia" : "Không tham gia"}`,
   ].filter(Boolean);
 
   const buf = await buildSheet({
@@ -39,8 +39,8 @@ export async function GET(req: NextRequest) {
       { header: "Sự kiện", key: "event", width: 36 },
       { header: "Ngày diễn ra", key: "eventDate", width: 18 },
       { header: "Đăng ký lúc", key: "createdAt", width: 18 },
-      { header: "Trạng thái", key: "status", width: 12 },
-      { header: "Người duyệt", key: "approver", width: 22 },
+      { header: "Trạng thái", key: "status", width: 14 },
+      { header: "Người xác nhận", key: "approver", width: 22 },
     ],
     rows: rows.map((r, i) => ({
       stt: i + 1,
@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
       eventDate: formatDateTime(r.event.date),
       createdAt: formatDateTime(r.createdAt),
       status: STATUS_LABEL[r.status],
-      approver: r.confirmedBy?.name ?? "",
+      approver: r.status === "CONFIRMED" ? r.confirmedBy?.name ?? "" : "",
     })),
   });
   const stamp = new Date().toISOString().slice(0, 10);

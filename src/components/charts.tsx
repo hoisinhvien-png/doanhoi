@@ -66,7 +66,7 @@ export function RateBarChart({ data }: { data: RateDatum[] }) {
                   title={(payload[0].payload as RateDatum).name}
                   lines={[
                     `Tỷ lệ tham gia: ${(payload[0].payload as RateDatum).rate}%`,
-                    `${(payload[0].payload as RateDatum).active}/${(payload[0].payload as RateDatum).total} sinh viên có ít nhất 1 sự kiện được duyệt`,
+                    `${(payload[0].payload as RateDatum).active}/${(payload[0].payload as RateDatum).total} sinh viên có ít nhất 1 sự kiện tham gia`,
                   ]}
                 />
               ) : null
@@ -88,7 +88,7 @@ export function RateBarChart({ data }: { data: RateDatum[] }) {
 
 export type MonthDatum = { month: string; count: number };
 
-/** Cột đứng: số lượt tham gia được duyệt theo tháng */
+/** Cột đứng: số lượt tham gia theo tháng */
 export function MonthlyColumnChart({ data }: { data: MonthDatum[] }) {
   return (
     <div className="h-64 w-full">
@@ -113,7 +113,7 @@ export function MonthlyColumnChart({ data }: { data: MonthDatum[] }) {
               active && payload?.[0] ? (
                 <TooltipBox
                   title={`Tháng ${(payload[0].payload as MonthDatum).month}`}
-                  lines={[`${(payload[0].payload as MonthDatum).count} lượt tham gia được duyệt`]}
+                  lines={[`${(payload[0].payload as MonthDatum).count} lượt tham gia`]}
                 />
               ) : null
             }

@@ -1,5 +1,5 @@
 // Đánh giá xếp loại đoàn viên.
-// Điểm (thang 10) = số sự kiện được duyệt ÷ số sự kiện sinh viên được tham gia × 10,
+// Điểm (thang 10) = số sự kiện được xác nhận Tham gia ÷ số sự kiện sinh viên được tham gia × 10,
 // trong khoảng thời gian chọn. "Được tham gia" = sự kiện toàn trường + sự kiện của khoa mình.
 // (Cách tính thầy chốt ngày 17/11/2026.)
 import "server-only";
@@ -10,6 +10,7 @@ export type GradeFilter = {
   to: Date;
   faculty?: string;
   className?: string;
+  userId?: string; // chỉ một sinh viên (trang của sinh viên)
 };
 
 export type GradeRow = {
@@ -44,6 +45,7 @@ export async function computeGrades(f: GradeFilter): Promise<GradeRow[]> {
     prisma.user.findMany({
       where: {
         role: "STUDENT",
+        ...(f.userId ? { id: f.userId } : {}),
         ...(f.faculty ? { faculty: f.faculty } : {}),
         ...(f.className ? { className: f.className } : {}),
       },
@@ -89,9 +91,9 @@ export async function computeGrades(f: GradeFilter): Promise<GradeRow[]> {
   });
 }
 
-/** Mặc định: từ 01/09 của năm học hiện tại tới hôm nay (giờ VN), dạng yyyy-mm-dd */
+/** Mặc định: từ 01/08 (đầu năm học) tới hôm nay (giờ VN), dạng yyyy-mm-dd */
 export function defaultRange(now: Date) {
   const vn = new Date(now.getTime() + 7 * 3600 * 1000);
-  const y = vn.getUTCMonth() >= 8 ? vn.getUTCFullYear() : vn.getUTCFullYear() - 1;
-  return { from: `${y}-09-01`, to: vn.toISOString().slice(0, 10) };
+  const y = vn.getUTCMonth() >= 7 ? vn.getUTCFullYear() : vn.getUTCFullYear() - 1;
+  return { from: `${y}-08-01`, to: vn.toISOString().slice(0, 10) };
 }

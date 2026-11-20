@@ -63,7 +63,7 @@ export default async function AdminEventsPage() {
                   <div className="mt-2 flex flex-wrap gap-2">
                     <Tag tone="blue">{ev.faculty ?? "Toàn trường"}</Tag>
                     <Tag>
-                      {count("CONFIRMED")} đã duyệt · {count("PENDING")} chờ duyệt
+                      {ev.participations.length} đăng ký · {count("CONFIRMED")} tham gia
                     </Tag>
                   </div>
                 </div>

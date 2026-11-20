@@ -1,0 +1,9 @@
+# Không đưa lên Vercel: file bí mật, thư viện, bản build cũ (Vercel tự cài và build lại)
+.env
+.env.*
+!.env.example
+*.pem
+node_modules
+.next
+src/generated
+.git

@@ -25,9 +25,10 @@ export function ImportPanel({ faculties }: { faculties: string[] }) {
         </a>
       </div>
       <p className="text-sm text-muted-foreground">
-        Dùng file danh sách điểm của trường. Phần mềm tự tìm các cột <b>Mã SV</b>, <b>Họ và tên</b>{" "}
-        (hoặc Họ đệm + Tên), <b>Ngày sinh</b>, <b>Lớp</b>, <b>Khoa</b>. Sinh viên mới có mật khẩu
-        ban đầu là ngày sinh (ddMMyyyy); sinh viên đã có chỉ được cập nhật thông tin, giữ nguyên mật khẩu.
+        Tải thẳng file xuất từ phần mềm quản lý đào tạo (cột MaSV, HoLotSV, TenSV, NgaySinhC, TenLop, TenKhoa)
+        hoặc file có các cột <b>Mã SV</b>, <b>Họ và tên</b> (hoặc Họ đệm + Tên), <b>Ngày sinh</b>, <b>Lớp</b>,{" "}
+        <b>Khoa</b>. Sinh viên mới được tạo tên tài khoản (VD: <b>DIEUTH2025_NN</b>) và mật khẩu ban đầu là ngày
+        sinh (ddMMyyyy); sinh viên đã có chỉ được cập nhật thông tin, giữ nguyên tên tài khoản và mật khẩu.
       </p>
 
       <form
@@ -109,6 +110,7 @@ export function ImportPanel({ faculties }: { faculties: string[] }) {
                 <tr>
                   <th className="px-2 py-1.5 font-medium">Dòng</th>
                   <th className="px-2 py-1.5 font-medium">Mã SV</th>
+                  <th className="px-2 py-1.5 font-medium">Tên tài khoản</th>
                   <th className="px-2 py-1.5 font-medium">Họ tên</th>
                   <th className="px-2 py-1.5 font-medium">Ngày sinh</th>
                   <th className="px-2 py-1.5 font-medium">Lớp</th>
@@ -121,6 +123,7 @@ export function ImportPanel({ faculties }: { faculties: string[] }) {
                   <tr key={r.line} className={r.errors.length ? "border-t bg-destructive/5" : "border-t"}>
                     <td className="px-2 py-1.5">{r.line}</td>
                     <td className="px-2 py-1.5">{r.studentId}</td>
+                    <td className="px-2 py-1.5 font-mono text-xs">{r.username}</td>
                     <td className="px-2 py-1.5">{r.name}</td>
                     <td className="px-2 py-1.5">{r.dob}</td>
                     <td className="px-2 py-1.5">{r.className}</td>

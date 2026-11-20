@@ -63,7 +63,7 @@ export async function resetLcdPassword(userId: string): Promise<ResetState> {
 
 export async function deleteLcdAccount(userId: string) {
   await requireRole("ADMIN");
-  // Chỉ xoá tài khoản LCĐ; các lượt đã duyệt vẫn giữ, chỉ mất tên người duyệt
+  // Chỉ xoá tài khoản LCĐ; các lượt đã xác nhận vẫn giữ, chỉ mất tên người xác nhận
   await prisma.user.deleteMany({ where: { id: userId, role: "LCD" } });
   refresh();
 }

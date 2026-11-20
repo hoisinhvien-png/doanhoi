@@ -2,25 +2,26 @@ import { cn } from "cn";
 
 type Status = "PENDING" | "CONFIRMED" | "REJECTED";
 
+const ATTENDED = {
+  label: "Tham gia",
+  className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
+};
+const NOT_ATTENDED = {
+  label: "Không tham gia",
+  className: "bg-muted text-muted-foreground",
+};
+
+// Chỉ còn 2 trạng thái hiển thị; REJECTED (dữ liệu cũ) cũng là Không tham gia
 const STYLE: Record<Status, { label: string; className: string }> = {
-  PENDING: {
-    label: "Chờ duyệt",
-    className: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
-  },
-  CONFIRMED: {
-    label: "Đã duyệt",
-    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
-  },
-  REJECTED: {
-    label: "Từ chối",
-    className: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-  },
+  PENDING: NOT_ATTENDED,
+  CONFIRMED: ATTENDED,
+  REJECTED: NOT_ATTENDED,
 };
 
 export const STATUS_LABEL: Record<Status, string> = {
-  PENDING: STYLE.PENDING.label,
-  CONFIRMED: STYLE.CONFIRMED.label,
-  REJECTED: STYLE.REJECTED.label,
+  PENDING: NOT_ATTENDED.label,
+  CONFIRMED: ATTENDED.label,
+  REJECTED: NOT_ATTENDED.label,
 };
 
 export function StatusBadge({ status }: { status: Status }) {

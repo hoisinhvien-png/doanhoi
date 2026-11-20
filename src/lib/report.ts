@@ -3,6 +3,7 @@ import "server-only";
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "./prisma";
 import { parseDateInput } from "./grading";
+import { NOT_ATTENDED } from "./attendance";
 
 export type ReportParams = {
   sk?: string; // id sự kiện
@@ -10,7 +11,7 @@ export type ReportParams = {
   den?: string;
   khoa?: string;
   lop?: string;
-  tt?: string; // PENDING | CONFIRMED | REJECTED | "" (tất cả)
+  tt?: string; // CONFIRMED (Tham gia) | NOT (Không tham gia) | "" (tất cả)
 };
 
 export function readReportParams(get: (k: string) => string | null | undefined): ReportParams {
@@ -23,9 +24,13 @@ export function reportWhere(p: ReportParams, forcedFaculty?: string): Prisma.Eve
   const from = parseDateInput(p.tu);
   const to = parseDateInput(p.den, true);
   const faculty = forcedFaculty ?? p.khoa;
-  const status = ["PENDING", "CONFIRMED", "REJECTED"].includes(p.tt ?? "")
-    ? (p.tt as "PENDING" | "CONFIRMED" | "REJECTED")
-    : undefined;
+  // tt=CONFIRMED: Tham gia; tt=NOT (hoặc PENDING/REJECTED cũ): Không tham gia
+  const status =
+    p.tt === "CONFIRMED"
+      ? ("CONFIRMED" as const)
+      : ["NOT", "PENDING", "REJECTED"].includes(p.tt ?? "")
+        ? { in: NOT_ATTENDED }
+        : undefined;
   return {
     ...(p.sk ? { eventId: p.sk } : {}),
     ...(status ? { status } : {}),

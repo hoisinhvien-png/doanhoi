@@ -34,16 +34,24 @@ export function norm(s: string) {
     .trim();
 }
 
-// Các tên tiêu đề hay gặp cho từng cột
+// Các tên tiêu đề hay gặp cho từng cột. So khớp không phân biệt dấu cách,
+// nên "TenLop", "Ten lop", "Tên lớp" đều nhận ra.
+// Có cả tên cột của file xuất từ phần mềm quản lý đào tạo của trường:
+// MaSV, HoLotSV, TenSV, NgaySinhC, TenLop, TenKhoa.
 const MATCHERS: Record<string, string[]> = {
-  studentId: ["ma sv", "masv", "ma sinh vien", "msv", "mssv", "ma so sinh vien", "ma hoc vien"],
-  name: ["ho va ten", "ho ten", "ho ten sinh vien", "ho va ten sinh vien"],
-  lastName: ["ho dem", "ho va dem", "ho lot", "ho"],
-  firstName: ["ten"],
-  dob: ["ngay sinh", "ngay thang nam sinh", "ns"],
+  studentId: ["ma sv", "ma sinh vien", "msv", "mssv", "ma so sinh vien", "ma hoc vien"],
+  name: ["ho va ten", "ho ten", "ho ten sinh vien", "ho va ten sinh vien", "ho ten sv"],
+  lastName: ["ho dem", "ho va dem", "ho lot", "ho lot sv", "ho dem sv", "ho"],
+  firstName: ["ten", "ten sv", "ten sinh vien"],
+  dob: ["ngay sinh", "ngay sinh c", "ngay thang nam sinh", "ns"],
   className: ["lop", "lop sinh hoat", "ma lop", "ten lop", "lop hoc"],
-  faculty: ["khoa", "ten khoa", "khoa vien", "don vi"],
+  // Cột "Khoa" chính là đơn vị Liên chi Đoàn quản lý sinh viên
+  faculty: ["khoa", "ten khoa", "khoa vien", "don vi", "lien chi doan", "ten lien chi doan", "lcd"],
 };
+const compact = (s: string) => s.replace(/ /g, "");
+const MATCHERS_COMPACT = Object.entries(MATCHERS).map(
+  ([key, names]) => [key, names.map(compact)] as const
+);
 
 const LABELS: Record<string, string> = {
   studentId: "Mã SV",
@@ -52,7 +60,7 @@ const LABELS: Record<string, string> = {
   firstName: "Tên",
   dob: "Ngày sinh",
   className: "Lớp",
-  faculty: "Khoa",
+  faculty: "Khoa (Liên chi Đoàn)",
 };
 
 function cellText(v: ExcelJS.CellValue): string {
@@ -94,9 +102,9 @@ function cellDate(v: ExcelJS.CellValue): Date | null {
 function matchColumns(row: ExcelJS.Row) {
   const map: Record<string, number> = {};
   row.eachCell((cell, col) => {
-    const t = norm(cellText(cell.value));
+    const t = compact(norm(cellText(cell.value)));
     if (!t) return;
-    for (const [key, names] of Object.entries(MATCHERS)) {
+    for (const [key, names] of MATCHERS_COMPACT) {
       if (map[key] === undefined && names.includes(t)) {
         map[key] = col;
         return;

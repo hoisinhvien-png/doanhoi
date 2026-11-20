@@ -2,9 +2,11 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
 import { getFaculties } from "@/lib/queries";
-import { formatDateTime, toLocalInputValue } from "@/lib/format";
+import { formatDate, formatDateTime, toLocalInputValue } from "@/lib/format";
+import { confirmDeadline } from "@/lib/attendance";
 import { deleteEvent, updateEvent } from "@/app/actions/events";
-import { StatusBadge } from "@/components/status-badge";
+import { setAttendance } from "@/app/actions/participations";
+import { AttendanceTable } from "@/components/attendance-table";
 import { EventForm } from "../event-form";
 import { DeleteEventButton } from "./delete-button";
 
@@ -43,39 +45,30 @@ export default async function EditEventPage({ params }: PageProps<"/quan-tri/su-
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">
-          Sinh viên đăng ký ({ev.participations.length})
-        </h2>
-        {ev.participations.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Chưa có ai đăng ký.</p>
-        ) : (
-          <div className="overflow-x-auto rounded-xl border bg-background">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/60 text-left">
-                <tr>
-                  <th className="px-3 py-2 font-medium">Mã SV</th>
-                  <th className="px-3 py-2 font-medium">Họ tên</th>
-                  <th className="px-3 py-2 font-medium">Lớp</th>
-                  <th className="px-3 py-2 font-medium">Khoa</th>
-                  <th className="px-3 py-2 font-medium">Đăng ký lúc</th>
-                  <th className="px-3 py-2 font-medium">Trạng thái</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ev.participations.map((p) => (
-                  <tr key={p.id} className="border-t">
-                    <td className="px-3 py-2">{p.user.studentId}</td>
-                    <td className="px-3 py-2">{p.user.name}</td>
-                    <td className="px-3 py-2">{p.user.className}</td>
-                    <td className="px-3 py-2">{p.user.faculty}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{formatDateTime(p.createdAt)}</td>
-                    <td className="px-3 py-2"><StatusBadge status={p.status} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <div>
+          <h2 className="text-lg font-semibold">
+            Sinh viên đăng ký ({ev.participations.length})
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Diễn ra {formatDateTime(ev.date)}. LCĐ xác nhận tham gia đến hết ngày{" "}
+            {formatDate(confirmDeadline(ev.date))}; Đoàn trường đổi được trạng thái bất cứ lúc nào.
+          </p>
+        </div>
+        <AttendanceTable
+          canEdit
+          showFaculty
+          markAttended={setAttendance.bind(null, ev.id, true)}
+          markAbsent={setAttendance.bind(null, ev.id, false)}
+          rows={ev.participations.map((p) => ({
+            id: p.id,
+            studentId: p.user.studentId ?? "",
+            name: p.user.name,
+            className: p.user.className ?? "",
+            faculty: p.user.faculty ?? "",
+            status: p.status,
+            createdAt: p.createdAt.toISOString(),
+          }))}
+        />
       </section>
 
       <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
