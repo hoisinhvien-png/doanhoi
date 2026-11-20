@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
 import { getFaculties } from "@/lib/queries";
 import { formatDate } from "@/lib/format";
-import { Lock, UserPlus } from "lucide-react";
+import { Download, Lock, UserPlus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { ImportPanel } from "./import-panel";
 
@@ -57,9 +57,18 @@ export default async function AdminStudentsPage({ searchParams }: PageProps<"/qu
           <h1 className="text-2xl font-bold">Sinh viên</h1>
           <p className="text-muted-foreground">{total} sinh viên</p>
         </div>
-        <Link href="/quan-tri/sinh-vien/moi" className={buttonVariants({ className: "h-10 px-4" })}>
-          <UserPlus className="size-4" /> Đăng ký tài khoản mới
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          {/* Xuất theo đúng bộ lọc đang chọn bên dưới (khoa, từ khoá) */}
+          <a
+            href={`/api/excel/tai-khoan-sinh-vien?${new URLSearchParams({ ...(q && { q }), ...(khoa && { khoa }) })}`}
+            className={buttonVariants({ variant: "outline", className: "h-10 px-4" })}
+          >
+            <Download className="size-4" /> Xuất tài khoản{khoa ? ` khoa ${khoa}` : ""}
+          </a>
+          <Link href="/quan-tri/sinh-vien/moi" className={buttonVariants({ className: "h-10 px-4" })}>
+            <UserPlus className="size-4" /> Đăng ký tài khoản mới
+          </Link>
+        </div>
       </div>
 
       <ImportPanel faculties={faculties} />
