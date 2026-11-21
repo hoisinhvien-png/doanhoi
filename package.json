@@ -11,7 +11,8 @@
     "studio": "prisma studio --port 5555 --browser none",
     "seed:demo": "tsx prisma/seed-demo.ts",
     "cleanup:demo": "tsx prisma/cleanup-demo.ts",
-    "reset-password": "tsx prisma/reset-password.ts"
+    "reset-password": "tsx prisma/reset-password.ts",
+    "backup": "node scripts/backup.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

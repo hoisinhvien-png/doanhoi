@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Bản sao lưu dữ liệu (chứa dữ liệu thật, KHÔNG đẩy lên GitHub)
+/backup
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
