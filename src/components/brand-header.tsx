@@ -46,7 +46,9 @@ export function BrandHeader({
             <p className={big ? "text-sm font-bold tracking-wide sm:text-xl" : "text-sm font-bold tracking-wide sm:text-base"}>
               ĐOÀN THANH NIÊN – HỘI SINH VIÊN
             </p>
-            <p className="text-xs text-white/80 sm:text-sm">Trường Đại học Hà Tĩnh</p>
+            <p className={big ? "text-sm font-medium text-white/90 sm:text-base" : "text-xs font-medium text-white/90 sm:text-sm"}>
+              Trường Đại học Hà Tĩnh
+            </p>
           </div>
         </Link>
         {right}

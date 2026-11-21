@@ -34,7 +34,7 @@ export default function Home() {
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-10 px-4 py-10 sm:py-16">
         <section className="flex flex-col items-center gap-4 text-center">
-          <span className="rounded-full bg-[#0072bc]/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#0072bc] dark:bg-sky-400/10 dark:text-sky-300">
+          <span className="rounded-full bg-[#0072bc]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-[#0072bc] sm:text-base dark:bg-sky-400/10 dark:text-sky-300">
             Trường Đại học Hà Tĩnh
           </span>
           <h1 className="max-w-4xl text-2xl font-extrabold leading-snug tracking-tight text-[#00487a] sm:text-4xl dark:text-sky-100">
