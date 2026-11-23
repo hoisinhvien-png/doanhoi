@@ -3,10 +3,13 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, Lock, MapPin } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { formatDate, formatDateTime, toLocalInputValue } from "@/lib/format";
 import { confirmDeadline, lcdWindow } from "@/lib/attendance";
+import { deleteEvent, updateEvent } from "@/app/actions/events";
 import { setAttendance } from "@/app/actions/participations";
 import { AttendanceTable } from "@/components/attendance-table";
+import { DeleteEventButton } from "@/components/delete-event-button";
+import { EventForm } from "@/app/quan-tri/su-kien/event-form";
 import { Tag } from "@/components/status-badge";
 
 /** LCĐ xem một sự kiện: sắp diễn ra thì chỉ xem; trong 7 ngày sau sự kiện thì xác nhận Tham gia */
@@ -28,6 +31,8 @@ export default async function LcdEventPage({ params }: PageProps<"/lien-chi/su-k
 
   const w = lcdWindow(ev.date, new Date());
   const deadline = confirmDeadline(ev.date);
+  // Sự kiện do chính LCĐ này tạo thì được sửa/xoá; sự kiện toàn trường hoặc do Đoàn trường tạo thì không.
+  const mine = ev.createdById === me.id;
 
   return (
     <div className="flex flex-col gap-5">
@@ -86,6 +91,42 @@ export default async function LcdEventPage({ params }: PageProps<"/lien-chi/su-k
             createdAt: p.createdAt.toISOString(),
           }))}
         />
+      )}
+
+      {mine && (
+        <>
+          <section className="flex flex-col gap-4 border-t pt-6">
+            <div>
+              <h2 className="text-lg font-semibold">Sửa sự kiện của khoa</h2>
+              <p className="text-sm text-muted-foreground">
+                Sự kiện do khoa bạn tạo. Chỉ sinh viên khoa {me.faculty} thấy và đăng ký được.
+              </p>
+            </div>
+            <EventForm
+              action={updateEvent.bind(null, ev.id)}
+              faculties={[]}
+              hideFaculty
+              cancelHref="/lien-chi/su-kien"
+              submitLabel="Lưu thay đổi"
+              initial={{
+                title: ev.title,
+                date: toLocalInputValue(ev.date),
+                location: ev.location ?? "",
+                faculty: ev.faculty ?? "",
+                description: ev.description ?? "",
+                registrationOpen: ev.registrationOpen,
+              }}
+            />
+          </section>
+
+          <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+            <h2 className="font-semibold text-destructive">Xoá sự kiện</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Xoá cả {ev.participations.length} lượt đăng ký của sự kiện này. Không khôi phục được.
+            </p>
+            <DeleteEventButton action={deleteEvent.bind(null, ev.id)} title={ev.title} />
+          </section>
+        </>
       )}
     </div>
   );

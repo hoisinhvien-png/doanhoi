@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-/** Nút xoá có hỏi xác nhận trước */
+/** Nút xoá sự kiện có hỏi xác nhận trước (dùng chung cho Đoàn trường và LCĐ) */
 export function DeleteEventButton({
   action,
   title,

@@ -11,7 +11,10 @@ export default async function AdminEventsPage() {
   await requireRole("ADMIN");
   const events = await prisma.event.findMany({
     orderBy: { date: "desc" },
-    include: { participations: { select: { status: true } } },
+    include: {
+      participations: { select: { status: true } },
+      createdBy: { select: { role: true } },
+    },
   });
 
   return (
@@ -62,6 +65,7 @@ export default async function AdminEventsPage() {
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <Tag tone="blue">{ev.faculty ?? "Toàn trường"}</Tag>
+                    {ev.createdBy?.role === "LCD" && <Tag tone="green">LCĐ khoa tạo</Tag>}
                     <Tag>
                       {ev.participations.length} đăng ký · {count("CONFIRMED")} tham gia
                     </Tag>

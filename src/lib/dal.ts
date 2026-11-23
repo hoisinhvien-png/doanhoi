@@ -44,3 +44,12 @@ export async function requireRole(role: RoleName): Promise<CurrentUser> {
   if (user.role !== role) redirect(ROLE_HOME[user.role]);
   return user;
 }
+
+/** Bắt buộc là cán bộ quản lý sự kiện: Đoàn trường (ADMIN) hoặc Liên chi Đoàn (LCD). */
+export async function requireStaff(): Promise<CurrentUser> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/dang-xuat");
+  if (user.mustChangePassword) redirect("/doi-mat-khau");
+  if (user.role !== "ADMIN" && user.role !== "LCD") redirect(ROLE_HOME[user.role]);
+  return user;
+}

@@ -8,7 +8,7 @@ import { deleteEvent, updateEvent } from "@/app/actions/events";
 import { setAttendance } from "@/app/actions/participations";
 import { AttendanceTable } from "@/components/attendance-table";
 import { EventForm } from "../event-form";
-import { DeleteEventButton } from "./delete-button";
+import { DeleteEventButton } from "@/components/delete-event-button";
 
 export default async function EditEventPage({ params }: PageProps<"/quan-tri/su-kien/[id]">) {
   await requireRole("ADMIN");

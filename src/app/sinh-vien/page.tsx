@@ -19,7 +19,8 @@ export default async function StudentHome() {
 
   const [events, grades, rules] = await Promise.all([
     prisma.event.findMany({
-      where: { date: { gte: sy.from, lte: sy.to } },
+      // Chỉ sự kiện toàn trường và của khoa mình — sự kiện khoa khác không hiển thị.
+      where: { date: { gte: sy.from, lte: sy.to }, OR: [{ faculty: null }, { faculty: me.faculty }] },
       orderBy: { date: "asc" },
       include: { participations: { where: { userId: me.id }, select: { status: true } } },
     }),
@@ -94,7 +95,7 @@ export default async function StudentHome() {
                 <article key={ev.id} className="flex flex-col gap-3 rounded-xl border bg-background p-4">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold">{ev.title}</h3>
-                    {mine && <Tag tone="blue">Đã đăng ký</Tag>}
+                    {mine && <Tag tone="blue">Đã đăng ký tham gia</Tag>}
                   </div>
                   <EventMeta date={ev.date} location={ev.location} />
                   {ev.description && <p className="line-clamp-3 text-sm whitespace-pre-line">{ev.description}</p>}
@@ -108,7 +109,7 @@ export default async function StudentHome() {
                       </form>
                     ) : ev.registrationOpen ? (
                       <form action={registerEvent.bind(null, ev.id)}>
-                        <Button type="submit" className="h-9 px-5">Đăng ký</Button>
+                        <Button type="submit" className="h-9 px-5">Đăng ký tham gia</Button>
                       </form>
                     ) : (
                       <span className="text-xs text-muted-foreground">Đã đóng đăng ký</span>

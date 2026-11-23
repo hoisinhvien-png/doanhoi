@@ -2,26 +2,29 @@ import { cn } from "cn";
 
 type Status = "PENDING" | "CONFIRMED" | "REJECTED";
 
-const ATTENDED = {
-  label: "Tham gia",
-  className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
-};
-const NOT_ATTENDED = {
-  label: "Không tham gia",
-  className: "bg-muted text-muted-foreground",
-};
-
-// Chỉ còn 2 trạng thái hiển thị; REJECTED (dữ liệu cũ) cũng là Không tham gia
+// 3 trạng thái:
+// - PENDING   = sinh viên đã đăng ký, LCĐ chưa xác nhận -> "Chờ xác nhận"
+// - CONFIRMED = LCĐ xác nhận có tham gia (tính điểm)     -> "Tham gia"
+// - REJECTED  = LCĐ xác nhận không tham gia theo thực tế  -> "Không tham gia"
 const STYLE: Record<Status, { label: string; className: string }> = {
-  PENDING: NOT_ATTENDED,
-  CONFIRMED: ATTENDED,
-  REJECTED: NOT_ATTENDED,
+  PENDING: {
+    label: "Chờ xác nhận",
+    className: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-200",
+  },
+  CONFIRMED: {
+    label: "Tham gia",
+    className: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
+  },
+  REJECTED: {
+    label: "Không tham gia",
+    className: "bg-rose-100 text-rose-800 dark:bg-rose-900/40 dark:text-rose-200",
+  },
 };
 
 export const STATUS_LABEL: Record<Status, string> = {
-  PENDING: NOT_ATTENDED.label,
-  CONFIRMED: ATTENDED.label,
-  REJECTED: NOT_ATTENDED.label,
+  PENDING: STYLE.PENDING.label,
+  CONFIRMED: STYLE.CONFIRMED.label,
+  REJECTED: STYLE.REJECTED.label,
 };
 
 export function StatusBadge({ status }: { status: Status }) {
@@ -39,14 +42,23 @@ export function StatusBadge({ status }: { status: Status }) {
 }
 
 /** Nhãn nhỏ trung tính, ví dụ "Toàn trường", "Đã đóng đăng ký" */
-export function Tag({ children, tone = "muted" }: { children: React.ReactNode; tone?: "muted" | "blue" }) {
+export function Tag({
+  children,
+  tone = "muted",
+}: {
+  children: React.ReactNode;
+  tone?: "muted" | "blue" | "green";
+}) {
+  const toneClass = {
+    blue: "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200",
+    green: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200",
+    muted: "bg-muted text-muted-foreground",
+  }[tone];
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-        tone === "blue"
-          ? "bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200"
-          : "bg-muted text-muted-foreground"
+        toneClass
       )}
     >
       {children}

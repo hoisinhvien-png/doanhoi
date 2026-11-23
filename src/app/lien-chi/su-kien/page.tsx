@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, Lock, MapPin } from "lucide-react";
+import { CalendarDays, CalendarPlus, Lock, MapPin } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
 import { formatDate, formatDateTime } from "@/lib/format";
@@ -31,6 +31,7 @@ export default async function LcdEventsPage({ searchParams }: PageProps<"/lien-c
     date: true,
     location: true,
     faculty: true,
+    createdById: true,
     participations: { where: { user: { faculty: me.faculty } }, select: { status: true } },
   } as const;
 
@@ -47,17 +48,23 @@ export default async function LcdEventsPage({ searchParams }: PageProps<"/lien-c
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-bold">Các sự kiện</h1>
-        <p className="text-muted-foreground">
-          Sự kiện toàn trường và của khoa {me.faculty}. Sau khi sự kiện diễn ra, Liên chi Đoàn có 7 ngày để
-          xác nhận <b>Tham gia</b> cho sinh viên; quá hạn sự kiện bị khoá.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Các sự kiện</h1>
+          <p className="text-muted-foreground">
+            Sự kiện toàn trường và của khoa {me.faculty}. Sau khi sự kiện diễn ra, Liên chi Đoàn có 7 ngày để
+            xác nhận <b>Tham gia</b> cho sinh viên; quá hạn sự kiện bị khoá.
+          </p>
+        </div>
+        <Link href="/lien-chi/su-kien/moi" className={buttonVariants({ className: "h-10 px-4" })}>
+          <CalendarPlus className="size-4" />
+          Thêm sự kiện của khoa
+        </Link>
       </div>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Sắp diễn ra ({upcoming.length})</h2>
-        <EventList events={upcoming} now={now} empty="Chưa có sự kiện sắp diễn ra." />
+        <EventList events={upcoming} now={now} myId={me.id} empty="Chưa có sự kiện sắp diễn ra." />
       </section>
 
       <section className="flex flex-col gap-3">
@@ -78,7 +85,7 @@ export default async function LcdEventsPage({ searchParams }: PageProps<"/lien-c
           </form>
         </div>
         {past ? (
-          <EventList events={past} now={now} empty="Không có sự kiện nào trong khoảng thời gian này." />
+          <EventList events={past} now={now} myId={me.id} empty="Không có sự kiện nào trong khoảng thời gian này." />
         ) : (
           <p className="text-destructive">Khoảng ngày không hợp lệ.</p>
         )}
@@ -93,6 +100,7 @@ type Ev = {
   date: Date;
   location: string | null;
   faculty: string | null;
+  createdById: string | null;
   participations: { status: string }[];
 };
 
@@ -105,7 +113,7 @@ const WINDOW_TAG: Record<LcdWindow, { label: (d: Date) => string; className: str
   locked: { label: () => "Đã khoá", className: "bg-muted text-muted-foreground" },
 };
 
-function EventList({ events, now, empty }: { events: Ev[]; now: Date; empty: string }) {
+function EventList({ events, now, myId, empty }: { events: Ev[]; now: Date; myId: string; empty: string }) {
   if (events.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed bg-background p-8 text-center text-muted-foreground">{empty}</div>
@@ -139,6 +147,7 @@ function EventList({ events, now, empty }: { events: Ev[]; now: Date; empty: str
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
               <Tag tone="blue">{ev.faculty ?? "Toàn trường"}</Tag>
+              {ev.createdById === myId && <Tag tone="green">Khoa tự tạo</Tag>}
               <Tag>
                 {ev.participations.length} SV khoa đăng ký · {attended} tham gia
               </Tag>
