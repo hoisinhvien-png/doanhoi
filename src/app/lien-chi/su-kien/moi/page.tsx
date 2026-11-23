@@ -19,16 +19,16 @@ export default async function NewLcdEventPage() {
         <ArrowLeft className="size-4" /> Các sự kiện
       </Link>
       <div>
-        <h1 className="text-2xl font-bold">Thêm sự kiện của khoa</h1>
+        <h1 className="text-2xl font-bold">Thêm sự kiện</h1>
         <p className="text-muted-foreground">
-          Sự kiện này chỉ dành cho sinh viên khoa <b>{me.faculty}</b>; khoa khác không thấy. Đoàn trường vẫn
-          theo dõi được.
+          Chọn phạm vi <b>Toàn trường</b> (mọi sinh viên) hoặc <b>Chỉ trong liên chi</b> (chỉ sinh viên khoa{" "}
+          <b>{me.faculty}</b>). Đoàn trường vẫn theo dõi được.
         </p>
       </div>
       <EventForm
         action={createEvent}
         faculties={[]}
-        hideFaculty
+        lcdFaculty={me.faculty}
         cancelHref="/lien-chi/su-kien"
         submitLabel="Tạo sự kiện"
       />

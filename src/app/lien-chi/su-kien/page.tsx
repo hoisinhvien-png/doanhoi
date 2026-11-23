@@ -58,7 +58,7 @@ export default async function LcdEventsPage({ searchParams }: PageProps<"/lien-c
         </div>
         <Link href="/lien-chi/su-kien/moi" className={buttonVariants({ className: "h-10 px-4" })}>
           <CalendarPlus className="size-4" />
-          Thêm sự kiện của khoa
+          Thêm sự kiện
         </Link>
       </div>
 

@@ -21,9 +21,12 @@ function readForm(formData: FormData, me: CurrentUser) {
   let faculty = String(formData.get("faculty") ?? "").trim();
   // "Toàn trường" không phải một khoa — luôn quy về toàn trường (null)
   if (faculty.toLowerCase() === "toàn trường") faculty = "";
-  // LCĐ chỉ tạo/sửa sự kiện cho khoa mình — luôn ép phạm vi về khoa của họ,
-  // bất kể dữ liệu gửi lên (form LCĐ không có ô chọn phạm vi).
-  if (me.role === "LCD") faculty = me.faculty ?? "";
+  // LCĐ chỉ được chọn 2 phạm vi: Toàn trường (để trống) hoặc đúng khoa của mình.
+  if (me.role === "LCD" && faculty !== "" && faculty !== me.faculty) {
+    return {
+      error: "Phạm vi không hợp lệ: Liên chi Đoàn chỉ đăng toàn trường hoặc trong khoa mình.",
+    } as const;
+  }
   const registrationOpen = formData.get("registrationOpen") === "on";
 
   if (title.length < 3) return { error: "Tên sự kiện cần ít nhất 3 ký tự." } as const;

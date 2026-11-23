@@ -22,15 +22,16 @@ export function EventForm({
   initial,
   faculties,
   submitLabel,
-  hideFaculty = false,
+  lcdFaculty,
   cancelHref = "/quan-tri/su-kien",
 }: {
   action: (prev: EventFormState, formData: FormData) => Promise<EventFormState>;
   initial?: EventFormValues;
   faculties: string[];
   submitLabel: string;
-  // LCĐ chỉ tạo sự kiện cho khoa mình nên ẩn ô chọn phạm vi (phạm vi do máy chủ ép).
-  hideFaculty?: boolean;
+  // Nếu có: form của LCĐ — chỉ cho chọn "Toàn trường" hoặc đúng khoa này.
+  // Nếu không: form của Đoàn trường — chọn toàn trường hoặc bất kỳ khoa nào.
+  lcdFaculty?: string;
   cancelHref?: string;
 }) {
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -59,27 +60,38 @@ export function EventForm({
           placeholder="VD: Hội trường A"
         />
       </div>
-      {!hideFaculty && (
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="faculty">Phạm vi</Label>
-          <select
-            id="faculty"
-            name="faculty"
-            defaultValue={initial?.faculty ?? ""}
-            className="h-10 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
-          >
-            <option value="">Toàn trường (mọi sinh viên)</option>
-            {faculties.map((f) => (
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="faculty">Phạm vi</Label>
+        <select
+          id="faculty"
+          name="faculty"
+          defaultValue={initial?.faculty ?? ""}
+          className="h-10 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+        >
+          <option value="">Toàn trường (mọi sinh viên)</option>
+          {lcdFaculty ? (
+            <option value={lcdFaculty}>Chỉ trong liên chi (sinh viên khoa {lcdFaculty})</option>
+          ) : (
+            faculties.map((f) => (
               <option key={f} value={f}>
                 {f}
               </option>
-            ))}
-          </select>
-          <p className="text-xs text-muted-foreground">
-            Chọn <b>Toàn trường</b> để mọi sinh viên thấy và đăng ký được; chọn một khoa thì chỉ sinh viên khoa đó.
-          </p>
-        </div>
-      )}
+            ))
+          )}
+        </select>
+        <p className="text-xs text-muted-foreground">
+          {lcdFaculty ? (
+            <>
+              Chọn <b>Toàn trường</b> để mọi sinh viên thấy và đăng ký; chọn <b>Chỉ trong liên chi</b> thì chỉ
+              sinh viên khoa {lcdFaculty} thấy.
+            </>
+          ) : (
+            <>
+              Chọn <b>Toàn trường</b> để mọi sinh viên thấy và đăng ký được; chọn một khoa thì chỉ sinh viên khoa đó.
+            </>
+          )}
+        </p>
+      </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="description">Mô tả</Label>
         <textarea

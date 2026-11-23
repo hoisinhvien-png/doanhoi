@@ -97,15 +97,15 @@ export default async function LcdEventPage({ params }: PageProps<"/lien-chi/su-k
         <>
           <section className="flex flex-col gap-4 border-t pt-6">
             <div>
-              <h2 className="text-lg font-semibold">Sửa sự kiện của khoa</h2>
+              <h2 className="text-lg font-semibold">Sửa sự kiện</h2>
               <p className="text-sm text-muted-foreground">
-                Sự kiện do khoa bạn tạo. Chỉ sinh viên khoa {me.faculty} thấy và đăng ký được.
+                Sự kiện do bạn tạo. Chọn phạm vi toàn trường hoặc chỉ trong liên chi (khoa {me.faculty}).
               </p>
             </div>
             <EventForm
               action={updateEvent.bind(null, ev.id)}
               faculties={[]}
-              hideFaculty
+              lcdFaculty={me.faculty}
               cancelHref="/lien-chi/su-kien"
               submitLabel="Lưu thay đổi"
               initial={{
