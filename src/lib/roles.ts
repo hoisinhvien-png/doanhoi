@@ -25,7 +25,8 @@ export type IconName =
   | "history"
   | "user"
   | "key-round"
-  | "message-square";
+  | "message-square"
+  | "bar-chart";
 
 export type MenuItem = { href: string; label: string; icon: IconName };
 
@@ -36,6 +37,7 @@ export const ROLE_MENU: Record<RoleName, MenuItem[]> = {
     { href: "/quan-tri/su-kien", label: "Sự kiện", icon: "calendar" },
     { href: "/quan-tri/sinh-vien", label: "Sinh viên", icon: "users" },
     { href: "/quan-tri/xep-loai", label: "Đánh giá xếp loại", icon: "award" },
+    { href: "/quan-tri/thong-ke", label: "Thống kê tổng hợp", icon: "bar-chart" },
     { href: "/quan-tri/bao-cao", label: "Xuất báo cáo", icon: "file-spreadsheet" },
     { href: "/quan-tri/y-kien", label: "Ý kiến & phản hồi", icon: "message-square" },
     { href: "/quan-tri/tai-khoan", label: "Tài khoản LCĐ", icon: "key-round" },

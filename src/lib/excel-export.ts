@@ -4,17 +4,23 @@ import ExcelJS from "exceljs";
 
 export type Column = { header: string; key: string; width?: number };
 
-export async function buildSheet(opts: {
+export type SheetSpec = {
   title: string;
   subtitle?: string;
   sheetName: string;
   columns: Column[];
   rows: Record<string, string | number | null | undefined>[];
-}) {
+};
+
+function newWorkbook() {
   const wb = new ExcelJS.Workbook();
   wb.creator = "Hệ thống theo dõi hoạt động Đoàn – Hội HTU";
   wb.created = new Date();
-  const ws = wb.addWorksheet(opts.sheetName.slice(0, 31));
+  return wb;
+}
+
+/** Điền một bảng có định dạng (tiêu đề, mô tả, header, viền) vào một worksheet đã tạo */
+function fillSheet(ws: ExcelJS.Worksheet, opts: SheetSpec) {
   const n = opts.columns.length;
 
   // Dòng 1-2: tiêu đề và mô tả
@@ -60,6 +66,18 @@ export async function buildSheet(opts: {
   }
   ws.views = [{ state: "frozen", ySplit: 4 }];
   ws.autoFilter = { from: { row: 4, column: 1 }, to: { row: 4, column: n } };
+}
 
+/** Tạo file Excel một sheet */
+export async function buildSheet(opts: SheetSpec) {
+  const wb = newWorkbook();
+  fillSheet(wb.addWorksheet(opts.sheetName.slice(0, 31)), opts);
+  return wb.xlsx.writeBuffer();
+}
+
+/** Tạo file Excel nhiều sheet trong cùng một workbook */
+export async function buildMultiSheet(sheets: SheetSpec[]) {
+  const wb = newWorkbook();
+  for (const s of sheets) fillSheet(wb.addWorksheet(s.sheetName.slice(0, 31)), s);
   return wb.xlsx.writeBuffer();
 }

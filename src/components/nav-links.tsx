@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Award,
+  BarChart3,
   Calendar,
   CheckSquare,
   FileSpreadsheet,
@@ -28,6 +29,7 @@ const ICONS: Record<IconName, typeof User> = {
   user: User,
   "key-round": KeyRound,
   "message-square": MessageSquare,
+  "bar-chart": BarChart3,
 };
 
 /** Menu: dọc ở máy tính, thanh cuộn ngang ở điện thoại */
