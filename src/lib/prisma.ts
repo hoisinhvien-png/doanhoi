@@ -9,10 +9,12 @@ function createClient() {
   const adapter = new PrismaPg({
     connectionString: url.toString(),
     ssl: ca ? { ca, rejectUnauthorized: true } : undefined,
-    // Gói Aiven miễn phí chỉ cho ~20 kết nối: mỗi tiến trình mở tối đa vài kết nối,
-    // nhả kết nối rảnh sau 10 giây
-    max: Number(process.env.DB_POOL_MAX ?? 3),
-    idleTimeoutMillis: 10_000,
+    // Aiven gói miễn phí giới hạn ~15 kết nối (còn ~9 cho app sau khi trừ hệ thống).
+    // Serverless có nhiều tiến trình song song nên mỗi tiến trình chỉ giữ 1 kết nối
+    // (cố định, không theo biến môi trường), nhả nhanh khi rảnh, và báo lỗi thay vì treo.
+    max: 1,
+    idleTimeoutMillis: 5_000,
+    connectionTimeoutMillis: 10_000,
   });
   return new PrismaClient({ adapter });
 }

@@ -59,8 +59,8 @@ export function BrandHeader({
 
 /** Người phụ trách hiển thị ở chân trang (sđt: chỉ chữ số, dùng cho liên kết gọi điện) */
 const CREDITS = [
-  { label: "Quản lý", name: "Nguyễn Quốc Dũng", phone: "0946582194" },
-  { label: "Thiết kế & lập trình", name: "Nguyễn Đức Sử", phone: "0914566838" },
+  { label: "Thiết kế hệ thống", name: "Nguyễn Quốc Dũng", phone: "0946582194" },
+  { label: "Thiết kế giao diện và Lập trình", name: "Nguyễn Đức Sử", phone: "0914566838" },
 ];
 
 /** 0914566838 → 0914 566 838 cho dễ đọc */

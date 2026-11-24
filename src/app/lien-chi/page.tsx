@@ -1,6 +1,7 @@
-import { CalendarDays, CheckCircle2, Clock, Users } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, MessageSquare, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
+import { STAFF_OPEN } from "@/lib/feedback";
 import { monthlyConfirmed, participationRates, schoolYear, upcomingEvents } from "@/lib/stats";
 import { StatTile } from "@/components/stat-tile";
 import { ChartCard } from "@/components/chart-card";
@@ -21,7 +22,7 @@ export default async function LcdHome() {
   const sy = schoolYear(now);
   const inFaculty = { user: { faculty: me.faculty } };
 
-  const [students, recent, confirmedYear, rates, monthly, upcoming] = await Promise.all([
+  const [students, recent, confirmedYear, rates, monthly, upcoming, openFeedback] = await Promise.all([
     prisma.user.count({ where: { role: "STUDENT", faculty: me.faculty } }),
     // Sự kiện vừa diễn ra có sinh viên khoa mình đăng ký, còn trong hạn xác nhận
     prisma.event.findMany({
@@ -37,6 +38,7 @@ export default async function LcdHome() {
     participationRates(sy.from, sy.to, me.faculty),
     monthlyConfirmed(sy.from, sy.to, me.faculty),
     upcomingEvents(now, me.faculty),
+    prisma.feedback.count({ where: { faculty: me.faculty, status: { in: STAFF_OPEN } } }),
   ]);
   const confirming = recent.filter((e) => lcdWindow(e.date, now) === "open").length;
   const active = rates.reduce((s, r) => s + r.active, 0);
@@ -50,6 +52,7 @@ export default async function LcdHome() {
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatTile label="Ý kiến chờ xử lý" value={openFeedback} hint={openFeedback ? "sinh viên đang chờ phản hồi" : "Không có"} href="/lien-chi/y-kien" icon={<MessageSquare className="size-4" />} />
         <StatTile label="Cần xác nhận tham gia" value={confirming} hint={confirming ? `sự kiện còn trong hạn ${CONFIRM_DAYS} ngày` : "Không có sự kiện nào"} href="/lien-chi/su-kien" icon={<Clock className="size-4" />} />
         <StatTile label="Sinh viên khoa" value={students} href="/lien-chi/sinh-vien" icon={<Users className="size-4" />} />
         <StatTile label="Tỷ lệ tham gia" value={`${overall}%`} hint={`${active}/${students} SV có ít nhất 1 sự kiện`} icon={<CheckCircle2 className="size-4" />} />

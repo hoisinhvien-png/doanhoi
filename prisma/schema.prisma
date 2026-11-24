@@ -17,14 +17,41 @@ enum Role {
   STUDENT // Sinh viên
 }
 
-/// Trạng thái lượt đăng ký sự kiện.
-/// Từ 20/11/2026 hệ thống chỉ dùng 2 trạng thái: "Tham gia" (CONFIRMED) và "Không tham gia" (PENDING).
-/// Đăng ký xong mặc định là Không tham gia; LCĐ xác nhận Tham gia trong 7 ngày sau sự kiện.
-/// REJECTED là dữ liệu cũ, hiển thị như Không tham gia (giữ lại để không phải đổi kiểu dữ liệu).
+/// Nơi sinh viên gửi ý kiến tới (Bổ sung 22/11/2026; bỏ Hội SV 22/11/2026 - gộp vào Đoàn trường)
+enum FeedbackRecipient {
+  DOAN_TRUONG   // Đoàn trường
+  LIEN_CHI_DOAN // Liên chi Đoàn khoa
+}
+
+/// Đánh giá của sinh viên sau khi nhận phản hồi (Bổ sung 22/11/2026)
+enum FeedbackSatisfaction {
+  LIKE   // Hài lòng
+  UNLIKE // Chưa hài lòng
+}
+
+/// Trạng thái lượt đăng ký sự kiện (từ 22/11/2026 dùng đủ 3 trạng thái).
+/// Sinh viên đăng ký tham gia -> PENDING. Sau sự kiện, LCĐ chốt trong 7 ngày:
+///   CONFIRMED = Tham gia (tính điểm xếp loại); REJECTED = Không tham gia theo thực tế.
 enum ParticipationStatus {
-  PENDING   // Không tham gia
+  PENDING   // Chờ xác nhận (SV đã đăng ký)
   CONFIRMED // Tham gia
-  REJECTED  // (cũ) Không tham gia
+  REJECTED  // Không tham gia
+}
+
+/// Loại ý kiến sinh viên gửi (Bổ sung 22/11/2026)
+enum FeedbackCategory {
+  SUGGESTION // Góp ý hoạt động
+  COMPLAINT  // Khiếu nại
+  QUESTION   // Câu hỏi
+  OTHER      // Khác
+}
+
+/// Trạng thái xử lý ý kiến (Bổ sung 22/11/2026)
+enum FeedbackStatus {
+  NEW         // Mới gửi, chưa ai trả lời
+  IN_PROGRESS // SV đã gửi tiếp, đang chờ cán bộ trả lời
+  ANSWERED    // Cán bộ đã phản hồi, chờ SV xem
+  CLOSED      // Đã đóng
 }
 
 /// Bảng 1: Người dùng & Sinh viên
@@ -47,6 +74,8 @@ model User {
   participations EventParticipation[] @relation("Participant")
   approvals      EventParticipation[] @relation("Approver")
   createdEvents  Event[]
+  feedbacks      Feedback[]           @relation("FeedbackAuthor")
+  feedbackReplies FeedbackReply[]     @relation("ReplyAuthor")
 
   @@index([faculty])
   @@index([className])
@@ -66,6 +95,7 @@ model Event {
   createdAt        DateTime @default(now())
 
   participations EventParticipation[]
+  feedbacks      Feedback[]
 
   @@index([date])
 }
@@ -93,4 +123,45 @@ model GradingRule {
   label    String @unique // Ví dụ: Khá, Trung bình, Yếu
   minScore Float  // Điểm tối thiểu (thang 10)
   order    Int    // Thứ tự hiển thị, mức cao nhất = 1
+}
+
+/// Bảng 4: Ý kiến sinh viên (Bổ sung 22/11/2026)
+/// Sinh viên gửi ý kiến -> định tuyến về LCĐ khoa mình (faculty) và Đoàn trường thấy tất cả.
+/// anonymous = true: cán bộ không thấy tên/lớp người gửi, nhưng SV vẫn nhận phản hồi trong tài khoản.
+model Feedback {
+  id          String           @id @default(cuid())
+  authorId    String
+  author      User              @relation("FeedbackAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  faculty     String? // Sao chép khoa của SV lúc gửi, để định tuyến tới LCĐ
+  recipient   FeedbackRecipient @default(LIEN_CHI_DOAN) // Nơi SV chọn gửi tới
+  anonymous   Boolean           @default(false)
+  satisfaction FeedbackSatisfaction? // SV đánh giá sau khi nhận phản hồi
+  category    FeedbackCategory  @default(SUGGESTION)
+  title       String
+  content     String           @db.Text
+  eventId     String? // Sự kiện liên quan (không bắt buộc)
+  event       Event?           @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  status      FeedbackStatus   @default(NEW)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  lastReplyAt DateTime? // Thời điểm phản hồi/trao đổi gần nhất
+
+  replies FeedbackReply[]
+
+  @@index([faculty])
+  @@index([status])
+}
+
+/// Bảng 5: Trao đổi trong một ý kiến (Bổ sung 22/11/2026)
+model FeedbackReply {
+  id         String   @id @default(cuid())
+  feedbackId String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  authorId   String?
+  author     User?    @relation("ReplyAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  authorRole Role // Vai trò người viết lúc gửi (để hiển thị dù tài khoản bị xoá)
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([feedbackId])
 }

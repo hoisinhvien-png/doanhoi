@@ -10,6 +10,7 @@ import {
   History,
   KeyRound,
   LayoutDashboard,
+  MessageSquare,
   User,
   Users,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const ICONS: Record<IconName, typeof User> = {
   history: History,
   user: User,
   "key-round": KeyRound,
+  "message-square": MessageSquare,
 };
 
 /** Menu: dọc ở máy tính, thanh cuộn ngang ở điện thoại */

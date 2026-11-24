@@ -61,8 +61,9 @@ export async function ReportPage({
           Trạng thái
           <select name="tt" defaultValue={params.tt} className={select}>
             <option value="">Tất cả</option>
+            <option value="PENDING">Chờ xác nhận</option>
             <option value="CONFIRMED">Tham gia</option>
-            <option value="NOT">Không tham gia</option>
+            <option value="REJECTED">Không tham gia</option>
           </select>
         </label>
         {!forcedFaculty && (

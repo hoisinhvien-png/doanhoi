@@ -19,16 +19,16 @@ function tempPassword() {
   return p;
 }
 
-/** Đoàn trường tạo tài khoản LCĐ cho một khoa */
-export async function createLcdAccount(_prev: AccountState, formData: FormData): Promise<AccountState> {
+/** Đoàn trường tạo tài khoản Liên chi Đoàn khoa (LCD) */
+export async function createStaffAccount(_prev: AccountState, formData: FormData): Promise<AccountState> {
   await requireRole("ADMIN");
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const name = String(formData.get("name") ?? "").replace(/\s+/g, " ").trim();
   const faculty = String(formData.get("faculty") ?? "").trim();
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "Email không hợp lệ." };
-  if (name.length < 3) return { error: "Vui lòng nhập tên người phụ trách hoặc tên LCĐ." };
-  if (!faculty) return { error: "Vui lòng chọn khoa quản lý." };
+  if (name.length < 3) return { error: "Vui lòng nhập tên hiển thị." };
+  if (!faculty) return { error: "Tài khoản Liên chi Đoàn cần chọn khoa quản lý." };
   if (await prisma.user.findFirst({ where: { email: { equals: email, mode: "insensitive" } } })) {
     return { error: "Email này đã có tài khoản." };
   }
@@ -45,11 +45,11 @@ export async function createLcdAccount(_prev: AccountState, formData: FormData):
     },
   });
   refresh();
-  // Mật khẩu tạm chỉ hiện MỘT lần để Đoàn trường gửi cho LCĐ
+  // Mật khẩu tạm chỉ hiện MỘT lần để Đoàn trường gửi cho cán bộ
   return { created: { email, password } };
 }
 
-export async function resetLcdPassword(userId: string): Promise<ResetState> {
+export async function resetStaffPassword(userId: string): Promise<ResetState> {
   await requireRole("ADMIN");
   const u = await prisma.user.findUnique({ where: { id: userId } });
   if (!u || u.role !== "LCD") return undefined;
@@ -61,9 +61,9 @@ export async function resetLcdPassword(userId: string): Promise<ResetState> {
   return { password };
 }
 
-export async function deleteLcdAccount(userId: string) {
+export async function deleteStaffAccount(userId: string) {
   await requireRole("ADMIN");
-  // Chỉ xoá tài khoản LCĐ; các lượt đã xác nhận vẫn giữ, chỉ mất tên người xác nhận
+  // Chỉ xoá tài khoản LCĐ; các lượt/phản hồi đã có vẫn giữ, chỉ mất tên người thực hiện
   await prisma.user.deleteMany({ where: { id: userId, role: "LCD" } });
   refresh();
 }

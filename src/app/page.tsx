@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, GraduationCap, ShieldCheck, Users } from "lucide-react";
 import { BrandFooter, BrandHeader } from "@/components/brand-header";
 
-// Ba thẻ đăng nhập theo vai trò (Bổ sung 20/11/2026)
+// Các thẻ đăng nhập theo vai trò (Bổ sung 20/11/2026)
 const roles = [
   {
     key: "quan-ly",
@@ -43,7 +43,7 @@ export default function Home() {
           <p className="max-w-2xl text-muted-foreground sm:text-lg">Chọn vai trò của bạn để đăng nhập.</p>
         </section>
 
-        <section className="grid gap-5 sm:grid-cols-3">
+        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {roles.map(({ key, icon: Icon, title, desc, accent }) => (
             <Link
               key={key}

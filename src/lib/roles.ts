@@ -24,7 +24,8 @@ export type IconName =
   | "check-square"
   | "history"
   | "user"
-  | "key-round";
+  | "key-round"
+  | "message-square";
 
 export type MenuItem = { href: string; label: string; icon: IconName };
 
@@ -36,17 +37,20 @@ export const ROLE_MENU: Record<RoleName, MenuItem[]> = {
     { href: "/quan-tri/sinh-vien", label: "Sinh viên", icon: "users" },
     { href: "/quan-tri/xep-loai", label: "Đánh giá xếp loại", icon: "award" },
     { href: "/quan-tri/bao-cao", label: "Xuất báo cáo", icon: "file-spreadsheet" },
+    { href: "/quan-tri/y-kien", label: "Ý kiến & phản hồi", icon: "message-square" },
     { href: "/quan-tri/tai-khoan", label: "Tài khoản LCĐ", icon: "key-round" },
   ],
   LCD: [
     { href: "/lien-chi", label: "Tổng quan khoa", icon: "layout-dashboard" },
     { href: "/lien-chi/su-kien", label: "Các sự kiện", icon: "calendar" },
     { href: "/lien-chi/sinh-vien", label: "Sinh viên khoa", icon: "users" },
+    { href: "/lien-chi/y-kien", label: "Ý kiến sinh viên", icon: "message-square" },
     { href: "/lien-chi/bao-cao", label: "Xuất Excel", icon: "file-spreadsheet" },
   ],
   STUDENT: [
     { href: "/sinh-vien", label: "Sự kiện & xếp loại", icon: "calendar" },
     { href: "/sinh-vien/lich-su", label: "Lịch sử tham gia", icon: "history" },
+    { href: "/sinh-vien/y-kien", label: "Ý kiến & phản hồi", icon: "message-square" },
     { href: "/sinh-vien/ho-so", label: "Hồ sơ", icon: "user" },
   ],
 };

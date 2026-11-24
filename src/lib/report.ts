@@ -24,13 +24,18 @@ export function reportWhere(p: ReportParams, forcedFaculty?: string): Prisma.Eve
   const from = parseDateInput(p.tu);
   const to = parseDateInput(p.den, true);
   const faculty = forcedFaculty ?? p.khoa;
-  // tt=CONFIRMED: Tham gia; tt=NOT (hoặc PENDING/REJECTED cũ): Không tham gia
+  // 3 trạng thái: CONFIRMED (Tham gia), PENDING (Chờ xác nhận), REJECTED (Không tham gia).
+  // "NOT" (link cũ): gộp Chờ xác nhận + Không tham gia.
   const status =
     p.tt === "CONFIRMED"
       ? ("CONFIRMED" as const)
-      : ["NOT", "PENDING", "REJECTED"].includes(p.tt ?? "")
-        ? { in: NOT_ATTENDED }
-        : undefined;
+      : p.tt === "PENDING"
+        ? ("PENDING" as const)
+        : p.tt === "REJECTED"
+          ? ("REJECTED" as const)
+          : p.tt === "NOT"
+            ? { in: NOT_ATTENDED }
+            : undefined;
   return {
     ...(p.sk ? { eventId: p.sk } : {}),
     ...(status ? { status } : {}),

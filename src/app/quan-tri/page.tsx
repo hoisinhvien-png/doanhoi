@@ -1,6 +1,7 @@
-import { CalendarDays, CheckCircle2, Clock, Users } from "lucide-react";
+import { CalendarDays, CheckCircle2, Clock, MessageSquare, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/dal";
+import { STAFF_OPEN } from "@/lib/feedback";
 import { monthlyConfirmed, participationRates, schoolYear, upcomingEvents } from "@/lib/stats";
 import { StatTile } from "@/components/stat-tile";
 import { ChartCard } from "@/components/chart-card";
@@ -14,7 +15,7 @@ export default async function AdminHome() {
   const sy = schoolYear(now);
   const inYear = { date: { gte: sy.from, lte: sy.to } };
 
-  const [students, eventsYear, confirmedYear, recent, rates, monthly, upcoming] = await Promise.all([
+  const [students, eventsYear, confirmedYear, recent, rates, monthly, upcoming, openFeedback] = await Promise.all([
     prisma.user.count({ where: { role: "STUDENT" } }),
     prisma.event.count({ where: inYear }),
     prisma.eventParticipation.count({ where: { status: "CONFIRMED", event: inYear } }),
@@ -26,6 +27,7 @@ export default async function AdminHome() {
     participationRates(sy.from, sy.to),
     monthlyConfirmed(sy.from, sy.to),
     upcomingEvents(now),
+    prisma.feedback.count({ where: { status: { in: STAFF_OPEN } } }),
   ]);
   const confirming = recent.filter((e) => lcdWindow(e.date, now) === "open").length;
   const active = rates.reduce((s, r) => s + r.active, 0);
@@ -43,6 +45,7 @@ export default async function AdminHome() {
         <StatTile label="Sự kiện năm học" value={eventsYear} hint={`${upcoming.length} sự kiện sắp diễn ra`} href="/quan-tri/su-kien" icon={<CalendarDays className="size-4" />} />
         <StatTile label="Lượt tham gia" value={confirmedYear} hint="trong năm học" href="/quan-tri/bao-cao?tt=CONFIRMED" icon={<CheckCircle2 className="size-4" />} />
         <StatTile label="Đang trong hạn xác nhận" value={confirming} hint={`sự kiện LCĐ còn ${CONFIRM_DAYS} ngày xác nhận`} href="/quan-tri/su-kien" icon={<Clock className="size-4" />} />
+        <StatTile label="Ý kiến chờ xử lý" value={openFeedback} hint={openFeedback ? "sinh viên đang chờ phản hồi" : "Không có"} href="/quan-tri/y-kien" icon={<MessageSquare className="size-4" />} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">

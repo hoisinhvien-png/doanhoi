@@ -6,7 +6,7 @@ import { getCurrentUser, requireRole } from "@/lib/dal";
 import { startOfTodayVN } from "@/lib/format";
 import { lcdWindow } from "@/lib/attendance";
 
-/** Sinh viên bấm Đăng ký — mặc định được ghi nhận "Không tham gia" */
+/** Sinh viên bấm Đăng ký tham gia — ghi nhận "Chờ xác nhận" (PENDING), chờ LCĐ xác nhận sau sự kiện */
 export async function registerEvent(eventId: string) {
   const me = await requireRole("STUDENT");
   const ev = await prisma.event.findUnique({ where: { id: eventId } });
@@ -38,7 +38,9 @@ export async function cancelRegistration(eventId: string) {
 }
 
 /**
- * Đổi trạng thái Tham gia / Không tham gia cho nhiều lượt cùng lúc.
+ * LCĐ/Đoàn trường chốt trạng thái cho nhiều lượt cùng lúc.
+ * - attended = true  -> CONFIRMED (Tham gia)
+ * - attended = false -> REJECTED  (Không tham gia theo thực tế)
  * - Đoàn trường: đổi được mọi lúc, mọi khoa.
  * - LCĐ: chỉ sinh viên khoa mình, chỉ trong hạn 7 ngày sau sự kiện.
  */
@@ -65,7 +67,7 @@ export async function setAttendance(eventId: string, attended: boolean, formData
     },
     data: attended
       ? { status: "CONFIRMED", confirmedById: me.id, confirmedAt: new Date() }
-      : { status: "PENDING", confirmedById: me.id, confirmedAt: new Date() },
+      : { status: "REJECTED", confirmedById: me.id, confirmedAt: new Date() },
   });
   refresh();
 }

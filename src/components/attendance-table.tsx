@@ -35,15 +35,23 @@ export function AttendanceTable({
   markAbsent?: Act;
 }) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [filter, setFilter] = useState<"all" | "yes" | "no">("all");
+  const [filter, setFilter] = useState<"all" | "pending" | "confirmed" | "rejected">("all");
   const shown = useMemo(
     () =>
       rows.filter((r) =>
-        filter === "all" ? true : filter === "yes" ? r.status === "CONFIRMED" : r.status !== "CONFIRMED"
+        filter === "all"
+          ? true
+          : filter === "pending"
+            ? r.status === "PENDING"
+            : filter === "confirmed"
+              ? r.status === "CONFIRMED"
+              : r.status === "REJECTED"
       ),
     [rows, filter]
   );
+  const pending = rows.filter((r) => r.status === "PENDING").length;
   const attended = rows.filter((r) => r.status === "CONFIRMED").length;
+  const absent = rows.filter((r) => r.status === "REJECTED").length;
   const all = shown.length > 0 && shown.every((r) => selected.has(r.id));
   const toggle = (id: string) =>
     setSelected((s) => {
@@ -63,8 +71,9 @@ export function AttendanceTable({
 
   const tabs = [
     { key: "all", label: `Tất cả (${rows.length})` },
-    { key: "yes", label: `Tham gia (${attended})` },
-    { key: "no", label: `Không tham gia (${rows.length - attended})` },
+    { key: "pending", label: `Chờ xác nhận (${pending})` },
+    { key: "confirmed", label: `Tham gia (${attended})` },
+    { key: "rejected", label: `Không tham gia (${absent})` },
   ] as const;
 
   return (
