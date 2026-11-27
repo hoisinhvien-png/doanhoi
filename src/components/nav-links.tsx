@@ -12,6 +12,7 @@ import {
   KeyRound,
   LayoutDashboard,
   MessageSquare,
+  Newspaper,
   User,
   Users,
 } from "lucide-react";
@@ -30,6 +31,7 @@ const ICONS: Record<IconName, typeof User> = {
   "key-round": KeyRound,
   "message-square": MessageSquare,
   "bar-chart": BarChart3,
+  newspaper: Newspaper,
 };
 
 /** Menu: dọc ở máy tính, thanh cuộn ngang ở điện thoại */

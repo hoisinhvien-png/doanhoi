@@ -54,6 +54,12 @@ enum FeedbackStatus {
   CLOSED      // Đã đóng
 }
 
+/// Trạng thái bài tin tức (Bổ sung 27/11/2026)
+enum ArticleStatus {
+  DRAFT     // Nháp (chưa công khai)
+  PUBLISHED // Đã đăng (ai cũng đọc được)
+}
+
 /// Bảng 1: Người dùng & Sinh viên
 model User {
   id                 String    @id @default(cuid())
@@ -76,6 +82,7 @@ model User {
   createdEvents  Event[]
   feedbacks      Feedback[]           @relation("FeedbackAuthor")
   feedbackReplies FeedbackReply[]     @relation("ReplyAuthor")
+  articles       Article[]            @relation("ArticleAuthor")
 
   @@index([faculty])
   @@index([className])
@@ -164,4 +171,25 @@ model FeedbackReply {
   createdAt  DateTime @default(now())
 
   @@index([feedbackId])
+}
+
+/// Bảng 6: Tin tức công khai (Bổ sung 27/11/2026)
+/// Đoàn trường (ADMIN) soạn và đăng; mọi người (kể cả chưa đăng nhập) đọc được khi status = PUBLISHED.
+/// Ảnh bìa dán link ảnh ngoài (coverImage là URL). pinned = ghim làm tin nổi bật trên trang chủ.
+model Article {
+  id          String        @id @default(cuid())
+  title       String
+  summary     String?       @db.Text // Tóm tắt ngắn hiển thị ở thẻ tin và trang chủ
+  content     String        @db.Text // Nội dung đầy đủ của bài
+  coverImage  String? // Link ảnh bìa ngoài (URL); để trống thì hiện ô thay thế
+  pinned      Boolean       @default(false) // Ghim làm tin nổi bật
+  status      ArticleStatus @default(DRAFT)
+  authorId    String?
+  author      User?         @relation("ArticleAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  publishedAt DateTime? // Thời điểm đăng công khai lần đầu
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status])
+  @@index([pinned])
 }
