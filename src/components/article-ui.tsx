@@ -7,10 +7,13 @@ export function CoverImage({
   src,
   alt,
   className,
+  emptyClassName,
 }: {
   src: string | null;
   alt: string;
   className?: string;
+  // Lớp nền cho ô "Ảnh minh hoạ" khi chưa có ảnh (mặc định xanh nhạt).
+  emptyClassName?: string;
 }) {
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
@@ -18,7 +21,7 @@ export function CoverImage({
   }
   return (
     <div
-      className={`grid place-items-center bg-sky-100 text-sky-700/70 dark:bg-sky-900/30 dark:text-sky-300/60 ${className ?? ""}`}
+      className={`grid place-items-center ${emptyClassName ?? "bg-sky-100 text-sky-700/70 dark:bg-sky-900/30 dark:text-sky-300/60"} ${className ?? ""}`}
     >
       <span className="text-sm font-medium">Ảnh minh hoạ</span>
     </div>

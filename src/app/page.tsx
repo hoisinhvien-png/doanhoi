@@ -28,6 +28,7 @@ export default async function Home() {
             src={featured.coverImage}
             alt={featured.title}
             className="aspect-[16/10] w-full object-cover md:h-full"
+            emptyClassName="bg-gradient-to-br from-[#0072bc] to-[#005a96] text-white/80"
           />
           <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
             <span className="w-max rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
@@ -60,7 +61,7 @@ export default async function Home() {
 
       {/* Hoạt động sắp tới (sự kiện toàn trường) */}
       {events.length > 0 && (
-        <section className="flex flex-col gap-4">
+        <section id="hoat-dong" className="flex scroll-mt-20 flex-col gap-4">
           <SectionHeading>Hoạt động sắp tới</SectionHeading>
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             {events.map((ev) => (
