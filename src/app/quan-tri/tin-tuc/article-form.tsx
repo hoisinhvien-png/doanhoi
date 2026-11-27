@@ -11,10 +11,16 @@ export type ArticleFormValues = {
   title: string;
   summary: string;
   content: string;
+  category: string;
   coverImage: string;
   pinned: boolean;
   status: "PUBLISHED" | "DRAFT";
 };
+
+const CATEGORIES = ["Hoạt động", "Tình nguyện", "Học tập", "Thể thao", "Thông báo"];
+
+const selectClass =
+  "h-10 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30";
 
 const textareaClass =
   "rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30";
@@ -66,14 +72,32 @@ export function ArticleForm({
         />
       </div>
 
-      <FormField
-        id="coverImage"
-        label="Link ảnh bìa"
-        type="url"
-        defaultValue={initial?.coverImage}
-        placeholder="https://… (dán đường link ảnh)"
-        hint="Dán đường link ảnh ngoài (ảnh phải công khai). Để trống thì bài hiện ô ảnh minh hoạ."
-      />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="category">Chuyên mục</Label>
+          <select
+            id="category"
+            name="category"
+            defaultValue={initial?.category ?? CATEGORIES[0]}
+            className={selectClass}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">Quyết định màu nhãn của tin.</p>
+        </div>
+        <FormField
+          id="coverImage"
+          label="Link ảnh bìa"
+          type="url"
+          defaultValue={initial?.coverImage}
+          placeholder="https://… (dán đường link ảnh)"
+          hint="Để trống thì bài hiện ô ảnh minh hoạ theo màu chuyên mục."
+        />
+      </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
@@ -82,7 +106,7 @@ export function ArticleForm({
             id="status"
             name="status"
             defaultValue={initial?.status ?? "PUBLISHED"}
-            className="h-10 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+            className={selectClass}
           >
             <option value="PUBLISHED">Đăng ngay (công khai)</option>
             <option value="DRAFT">Lưu nháp (chưa công khai)</option>

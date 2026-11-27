@@ -38,6 +38,7 @@ export default async function EditArticlePage({
           title: a.title,
           summary: a.summary ?? "",
           content: a.content,
+          category: a.category ?? "",
           coverImage: a.coverImage ?? "",
           pinned: a.pinned,
           status: a.status,

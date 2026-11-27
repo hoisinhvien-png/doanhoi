@@ -1,12 +1,16 @@
-import Link from "next/link";
 import { connection } from "next/server";
 import { CalendarDays, MapPin } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
-import { CoverImage, NewsCard, SectionHeading } from "@/components/article-ui";
-import { articleDate, getHomeArticles, getUpcomingPublicEvents } from "@/lib/articles";
-import { formatDate, formatDateTime } from "@/lib/format";
+import {
+  FeatureCard,
+  NewsCard,
+  NewsPageHead,
+  SectionHeading,
+  SideCard,
+} from "@/components/article-ui";
+import { getHomeArticles, getUpcomingPublicEvents } from "@/lib/articles";
+import { formatDateTime } from "@/lib/format";
 
-// Trang công khai lấy dữ liệu lúc có request (không prerender tĩnh).
 export const instant = false;
 
 export default async function Home() {
@@ -15,54 +19,48 @@ export default async function Home() {
     getHomeArticles(),
     getUpcomingPublicEvents(),
   ]);
+  const side = rest.slice(0, 2);
+  const grid = rest.slice(2, 5);
 
   return (
     <PublicShell>
-      {/* Tin nổi bật */}
+      <NewsPageHead />
+
       {featured ? (
-        <Link
-          href={`/tin-tuc/${featured.id}`}
-          className="group grid overflow-hidden rounded-2xl border border-t-4 border-t-amber-400 bg-card shadow-sm transition hover:shadow-lg md:grid-cols-2"
-        >
-          <CoverImage
-            src={featured.coverImage}
-            alt={featured.title}
-            className="aspect-[16/10] w-full object-cover md:h-full"
-            emptyClassName="bg-gradient-to-br from-[#0072bc] to-[#005a96] text-white/80"
-          />
-          <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
-            <span className="w-max rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
-              Tin nổi bật
-            </span>
-            <h1 className="text-xl font-extrabold leading-snug group-hover:text-[#0072bc] sm:text-2xl dark:group-hover:text-sky-300">
-              {featured.title}
-            </h1>
-            {featured.summary && <p className="text-muted-foreground">{featured.summary}</p>}
-            <span className="text-sm text-muted-foreground">{formatDate(articleDate(featured))}</span>
+        <>
+          {/* Tin nổi bật (trái) + 2 tin (phải) */}
+          <div className="grid gap-5 md:grid-cols-[1.25fr_1fr]">
+            <FeatureCard a={featured} />
+            {side.length > 0 && (
+              <div className="grid content-start gap-5">
+                {side.map((a) => (
+                  <SideCard key={a.id} a={a} />
+                ))}
+              </div>
+            )}
           </div>
-        </Link>
+
+          {/* Thêm vài tin mới */}
+          {grid.length > 0 && (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {grid.map((a) => (
+                <NewsCard key={a.id} a={a} />
+              ))}
+            </div>
+          )}
+        </>
       ) : (
-        <div className="rounded-2xl border border-dashed bg-background p-10 text-center text-muted-foreground">
+        <div className="rounded-2xl border border-dashed bg-card p-10 text-center text-muted-foreground">
           Chưa có tin tức nào được đăng.
         </div>
-      )}
-
-      {/* Tin mới */}
-      {rest.length > 0 && (
-        <section className="flex flex-col gap-4">
-          <SectionHeading href="/tin-tuc">Tin mới</SectionHeading>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((a) => (
-              <NewsCard key={a.id} a={a} />
-            ))}
-          </div>
-        </section>
       )}
 
       {/* Hoạt động sắp tới (sự kiện toàn trường) */}
       {events.length > 0 && (
         <section id="hoat-dong" className="flex scroll-mt-20 flex-col gap-4">
-          <SectionHeading>Hoạt động sắp tới</SectionHeading>
+          <SectionHeading href="/tin-tuc" hrefLabel="Tất cả tin">
+            Hoạt động sắp tới
+          </SectionHeading>
           <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
             {events.map((ev) => (
               <div key={ev.id} className="flex items-center gap-4 border-b p-4 last:border-b-0">

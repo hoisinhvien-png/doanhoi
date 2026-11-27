@@ -15,6 +15,7 @@ export default async function AdminArticlesPage() {
     select: {
       id: true,
       title: true,
+      category: true,
       status: true,
       pinned: true,
       publishedAt: true,
@@ -62,6 +63,7 @@ export default async function AdminArticlesPage() {
                       <Tag>Nháp</Tag>
                     )}
                     {a.pinned && <Tag tone="blue">Nổi bật</Tag>}
+                    {a.category && <Tag>{a.category}</Tag>}
                     <span className="text-xs text-muted-foreground">
                       {formatDate(articleDate(a))}
                     </span>

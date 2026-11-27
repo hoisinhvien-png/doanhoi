@@ -181,6 +181,7 @@ model Article {
   title       String
   summary     String?       @db.Text // Tóm tắt ngắn hiển thị ở thẻ tin và trang chủ
   content     String        @db.Text // Nội dung đầy đủ của bài
+  category    String? // Chuyên mục: Hoạt động / Tình nguyện / Học tập / Thể thao / Thông báo (quyết định màu nhãn)
   coverImage  String? // Link ảnh bìa ngoài (URL); để trống thì hiện ô thay thế
   pinned      Boolean       @default(false) // Ghim làm tin nổi bật
   status      ArticleStatus @default(DRAFT)

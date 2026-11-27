@@ -13,6 +13,7 @@ function readForm(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const summary = String(formData.get("summary") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
   const coverImage = String(formData.get("coverImage") ?? "").trim();
   const pinned = formData.get("pinned") === "on";
   const publish = formData.get("status") === "PUBLISHED";
@@ -27,6 +28,7 @@ function readForm(formData: FormData) {
       title,
       summary: summary || null,
       content,
+      category: category || null,
       coverImage: coverImage || null,
       pinned,
       status: (publish ? "PUBLISHED" : "DRAFT") as "PUBLISHED" | "DRAFT",

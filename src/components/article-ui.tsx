@@ -1,34 +1,92 @@
 import Link from "next/link";
+import {
+  ArrowRight,
+  GraduationCap,
+  Heart,
+  Megaphone,
+  Newspaper,
+  Trophy,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import { formatDate } from "@/lib/format";
 import { articleDate, type ArticleCard } from "@/lib/articles";
 
-/** Ảnh bìa: link ngoài thì dùng <img> (khỏi khai báo domain cho next/image); trống thì hiện ô thay thế. */
-export function CoverImage({
-  src,
-  alt,
+// ===== Chuyên mục: màu nền ảnh + màu nhãn + icon =====
+type CatStyle = { grad: string; icon: LucideIcon };
+const CAT: Record<string, CatStyle> = {
+  "Hoạt động": { grad: "from-[#0072bc] to-[#00487a]", icon: Users },
+  "Tình nguyện": { grad: "from-emerald-600 to-teal-700", icon: Heart },
+  "Học tập": { grad: "from-violet-600 to-indigo-800", icon: GraduationCap },
+  "Thể thao": { grad: "from-cyan-500 to-sky-700", icon: Trophy },
+  "Thông báo": { grad: "from-amber-500 to-orange-700", icon: Megaphone },
+};
+const DEFAULT_CAT: CatStyle = { grad: "from-[#0072bc] to-[#00487a]", icon: Newspaper };
+const catOf = (c: string | null | undefined) => (c && CAT[c]) || DEFAULT_CAT;
+
+/** Danh sách chuyên mục dùng cho ô chọn ở form quản trị */
+export const CATEGORIES = ["Hoạt động", "Tình nguyện", "Học tập", "Thể thao", "Thông báo"];
+
+/** Ảnh bìa theo chuyên mục: có link ảnh thì hiện ảnh; không thì nền gradient + icon + "Ảnh minh hoạ". */
+export function CategoryCover({
+  a,
   className,
-  emptyClassName,
+  big,
 }: {
-  src: string | null;
-  alt: string;
+  a: ArticleCard;
   className?: string;
-  // Lớp nền cho ô "Ảnh minh hoạ" khi chưa có ảnh (mặc định xanh nhạt).
-  emptyClassName?: string;
+  big?: boolean;
 }) {
-  if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} className={className} loading="lazy" />;
+  const c = catOf(a.category);
+  const Icon = c.icon;
+  if (a.coverImage) {
+    return (
+      <div className={`relative overflow-hidden ${className ?? ""}`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={a.coverImage} alt={a.title} className="h-full w-full object-cover" loading="lazy" />
+        {a.category && (
+          <span className="absolute left-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
+            {a.category}
+          </span>
+        )}
+      </div>
+    );
   }
   return (
     <div
-      className={`grid place-items-center ${emptyClassName ?? "bg-sky-100 text-sky-700/70 dark:bg-sky-900/30 dark:text-sky-300/60"} ${className ?? ""}`}
+      className={`relative grid place-items-center bg-gradient-to-br ${c.grad} text-white ${className ?? ""}`}
     >
-      <span className="text-sm font-medium">Ảnh minh hoạ</span>
+      <Icon className={big ? "size-14 opacity-50" : "size-8 opacity-50"} />
+      {a.category && (
+        <span className="absolute left-3 top-3 rounded-full bg-black/30 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
+          {a.category}
+        </span>
+      )}
+      <span className="absolute bottom-2.5 right-3 rounded bg-black/25 px-2 py-0.5 text-[10px] font-medium text-white/80">
+        Ảnh minh hoạ
+      </span>
     </div>
   );
 }
 
-/** Tiêu đề khu, có thanh gạch vàng và link "Xem tất cả" tuỳ chọn. */
+/** Nhãn khu "Bản tin Đoàn – Hội / Tin tức & Thông báo" */
+export function NewsPageHead() {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="text-xs font-bold uppercase tracking-[0.15em] text-[#0072bc] dark:text-sky-300">
+        Bản tin Đoàn – Hội
+      </div>
+      <h1 className="text-2xl font-extrabold text-[#00487a] sm:text-3xl dark:text-sky-100">
+        Tin tức &amp; Thông báo
+      </h1>
+      <p className="text-sm text-muted-foreground sm:text-[15px]">
+        Hoạt động, phong trào và thông báo mới nhất của tuổi trẻ Trường Đại học Hà Tĩnh.
+      </p>
+    </div>
+  );
+}
+
+/** Tiêu đề khu có thanh gạch vàng (dùng cho "Hoạt động sắp tới") */
 export function SectionHeading({
   children,
   href,
@@ -56,20 +114,107 @@ export function SectionHeading({
   );
 }
 
-/** Thẻ tin trong lưới (trang chủ, trang /tin-tuc). */
+/** Dải ngăn khu "Tin trước đó" */
+export function SectionSep({ children, href }: { children: React.ReactNode; href?: string }) {
+  return (
+    <div className="flex items-center gap-4">
+      <h2 className="whitespace-nowrap text-lg font-bold">{children}</h2>
+      <span className="h-px flex-1 bg-border" />
+      {href && (
+        <Link href={href} className="shrink-0 text-sm font-bold text-[#0072bc] dark:text-sky-300">
+          Xem tất cả →
+        </Link>
+      )}
+    </div>
+  );
+}
+
+const Meta = ({ a, author }: { a: ArticleCard; author?: boolean }) => (
+  <div className="text-xs font-medium text-muted-foreground">
+    {formatDate(articleDate(a))}
+    {author && " · Đoàn trường"}
+  </div>
+);
+
+/** Thẻ TIN NỔI BẬT (lớn, bên trái) */
+export function FeatureCard({ a }: { a: ArticleCard }) {
+  return (
+    <Link
+      href={`/tin-tuc/${a.id}`}
+      className="group flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+    >
+      <CategoryCover a={a} big className="aspect-[21/10] w-full" />
+      <div className="flex flex-1 flex-col gap-2.5 p-5 sm:p-6">
+        <Meta a={a} author />
+        <h3 className="text-xl font-bold leading-snug group-hover:text-[#0072bc] sm:text-2xl dark:group-hover:text-sky-300">
+          {a.title}
+        </h3>
+        {a.summary && <p className="text-sm text-muted-foreground sm:text-[15px]">{a.summary}</p>}
+        <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold text-[#0072bc] dark:text-sky-300">
+          Đọc tiếp <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
+        </span>
+      </div>
+    </Link>
+  );
+}
+
+/** Thẻ nhỏ nằm NGANG (cột bên phải tin nổi bật) */
+export function SideCard({ a }: { a: ArticleCard }) {
+  return (
+    <Link
+      href={`/tin-tuc/${a.id}`}
+      className="group flex overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+    >
+      <CategoryCover a={a} className="w-28 shrink-0" />
+      <div className="flex flex-1 flex-col justify-center gap-1.5 p-3.5">
+        <Meta a={a} />
+        <h3 className="line-clamp-3 text-[15px] font-semibold leading-snug group-hover:text-[#0072bc] dark:group-hover:text-sky-300">
+          {a.title}
+        </h3>
+      </div>
+    </Link>
+  );
+}
+
+/** Thẻ tin trong lưới */
 export function NewsCard({ a }: { a: ArticleCard }) {
   return (
     <Link
       href={`/tin-tuc/${a.id}`}
       className="group flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
     >
-      <CoverImage src={a.coverImage} alt={a.title} className="aspect-[16/9] w-full object-cover" />
+      <CategoryCover a={a} className="aspect-[16/9] w-full" />
       <div className="flex flex-1 flex-col gap-2 p-4">
+        <Meta a={a} />
         <h3 className="line-clamp-2 font-semibold leading-snug group-hover:text-[#0072bc] dark:group-hover:text-sky-300">
           {a.title}
         </h3>
         {a.summary && <p className="line-clamp-2 text-sm text-muted-foreground">{a.summary}</p>}
-        <span className="mt-auto pt-1 text-xs text-muted-foreground">{formatDate(articleDate(a))}</span>
+      </div>
+    </Link>
+  );
+}
+
+/** Dòng tin (khu "Tin trước đó") */
+export function RowItem({ a }: { a: ArticleCard }) {
+  const c = catOf(a.category);
+  const Icon = c.icon;
+  return (
+    <Link
+      href={`/tin-tuc/${a.id}`}
+      className="flex items-center gap-4 border-b p-3.5 transition-colors last:border-b-0 hover:bg-muted/50"
+    >
+      <div
+        className={`grid size-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br ${c.grad} text-white`}
+      >
+        <Icon className="size-5 opacity-70" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <h4 className="truncate font-semibold">{a.title}</h4>
+        <div className="mt-0.5 text-xs text-muted-foreground">
+          {a.category ? `${a.category} · ` : ""}
+          {formatDate(articleDate(a))}
+        </div>
       </div>
     </Link>
   );

@@ -3,7 +3,7 @@ import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
-import { CoverImage } from "@/components/article-ui";
+import { CategoryCover } from "@/components/article-ui";
 import { articleDate, getPublicArticle } from "@/lib/articles";
 import { formatDate } from "@/lib/format";
 
@@ -21,14 +21,20 @@ export default async function ArticleDetailPage({
 
   return (
     <PublicShell>
-      <article className="mx-auto flex w-full max-w-3xl flex-col gap-5">
+      <article className="mx-auto flex w-full max-w-3xl flex-col gap-4">
         <Link
           href="/tin-tuc"
-          className="inline-flex w-max items-center gap-1.5 text-sm font-semibold text-[#0072bc] hover:underline dark:text-sky-300"
+          className="inline-flex w-max items-center gap-1.5 text-sm font-bold text-[#0072bc] hover:underline dark:text-sky-300"
         >
           <ArrowLeft className="size-4" />
-          Tất cả tin tức
+          Quay lại tin tức
         </Link>
+
+        {a.category && (
+          <span className="w-max rounded-full bg-[#0072bc]/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#0072bc] dark:bg-sky-400/10 dark:text-sky-300">
+            {a.category}
+          </span>
+        )}
 
         <h1 className="text-2xl font-extrabold leading-snug sm:text-3xl">{a.title}</h1>
 
@@ -37,18 +43,12 @@ export default async function ArticleDetailPage({
             <CalendarDays className="size-4" />
             {formatDate(articleDate(a))}
           </span>
-          {a.author?.name && <span>· {a.author.name}</span>}
+          {a.author?.name && <span>· Đăng bởi {a.author.name}</span>}
         </div>
 
-        <CoverImage
-          src={a.coverImage}
-          alt={a.title}
-          className="aspect-[16/9] w-full rounded-2xl border object-cover"
-        />
+        <CategoryCover a={a} big className="aspect-[16/8] w-full rounded-2xl border" />
 
-        {a.summary && (
-          <p className="text-lg font-medium text-muted-foreground">{a.summary}</p>
-        )}
+        {a.summary && <p className="text-lg font-semibold">{a.summary}</p>}
 
         <div className="whitespace-pre-wrap text-[15px] leading-relaxed sm:text-base">
           {a.content}

@@ -9,6 +9,7 @@ const cardSelect = {
   id: true,
   title: true,
   summary: true,
+  category: true,
   coverImage: true,
   pinned: true,
   publishedAt: true,
@@ -19,6 +20,7 @@ export type ArticleCard = {
   id: string;
   title: string;
   summary: string | null;
+  category: string | null;
   coverImage: string | null;
   pinned: boolean;
   publishedAt: Date | null;
