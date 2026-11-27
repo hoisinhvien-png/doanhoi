@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays } from "lucide-react";
 import { PublicShell } from "@/components/public-shell";
 import { CategoryCover } from "@/components/article-ui";
+import { ArticleBody } from "@/components/article-body";
 import { articleDate, getPublicArticle } from "@/lib/articles";
 import { formatDate } from "@/lib/format";
 
@@ -50,9 +51,7 @@ export default async function ArticleDetailPage({
 
         {a.summary && <p className="text-lg font-semibold">{a.summary}</p>}
 
-        <div className="whitespace-pre-wrap text-[15px] leading-relaxed sm:text-base">
-          {a.content}
-        </div>
+        <ArticleBody content={a.content} />
       </article>
     </PublicShell>
   );
