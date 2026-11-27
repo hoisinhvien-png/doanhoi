@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GraduationCap, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { cn } from "cn";
 
 // Menu công khai. Sự kiện -> khối Hoạt động sắp tới ở trang chủ; Liên hệ -> chân trang.
@@ -13,7 +14,7 @@ const MENU = [
   { href: "/#lien-he", label: "Liên hệ" },
 ];
 
-/** Thanh đầu trang CÔNG KHAI (xanh đậm, có menu) — riêng, không đụng header của các trang sau đăng nhập. */
+/** Thanh đầu trang CÔNG KHAI (xanh đậm, có menu) — logo và cỡ chữ giống header trang trong. */
 export function PublicHeader() {
   const pathname = usePathname();
   const active = (href: string) => {
@@ -24,20 +25,25 @@ export function PublicHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-[#00487a] text-white shadow-md">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-3 px-4 sm:gap-4">
-        <Link href="/" className="flex min-w-0 items-center gap-3">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white">
-            <GraduationCap className="size-6 text-[#0072bc]" />
-          </span>
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-3 sm:gap-4">
+        <Link href="/" className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <Image
+            src="/logo-htu-tron-trang.png"
+            alt="Logo Trường Đại học Hà Tĩnh"
+            width={512}
+            height={512}
+            priority
+            className="size-12 shrink-0 sm:size-16"
+          />
           <span className="min-w-0 leading-tight">
-            <span className="block truncate text-sm font-extrabold tracking-wide sm:text-[15px]">
+            <span className="block truncate text-sm font-bold tracking-wide sm:text-xl">
               ĐOÀN THANH NIÊN – HỘI SINH VIÊN
             </span>
-            <span className="block text-[11px] text-white/80 sm:text-xs">Trường Đại học Hà Tĩnh</span>
+            <span className="block text-xs text-white/85 sm:text-base">Trường Đại học Hà Tĩnh</span>
           </span>
         </Link>
 
-        <nav className="ml-2 hidden items-center gap-1 md:flex">
+        <nav className="ml-2 hidden items-center gap-1 lg:flex">
           {MENU.map((m) => (
             <Link
               key={m.href}
