@@ -15,7 +15,7 @@ const CONTACT = {
   address: "VP Đoàn – Hội: tầng 1, nhà Hiệu bộ, Trường Đại học Hà Tĩnh, Xã Cẩm Vịnh, Hà Tĩnh",
   phone: "0946 582 194",
   zalo: "0946 582 194", // bấm vào mở https://zalo.me/0946582194
-  buildingImage: "https://tuyensinhhuongnghiep.vn/upload/images/2023/06/22/truong-dai-hoc-ha-tinh.jpg", // ảnh trụ sở; để trống thì hiện ô chờ ảnh
+  buildingImage: "/tru-so-htu.jpg", // ảnh trụ sở lưu trong public/ app; để trống thì hiện ô chờ ảnh
   mapQuery: "18.304326,105.937558", // toạ độ vị trí thầy chọn (có ghim trên bản đồ)
 };
 
