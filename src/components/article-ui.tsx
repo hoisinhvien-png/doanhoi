@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import { articleDate, type ArticleCard } from "@/lib/articles";
+import { CoverImage } from "@/components/cover-image";
 
 // ===== Chuyên mục: màu nền ảnh + màu nhãn + icon =====
 type CatStyle = { grad: string; icon: LucideIcon };
@@ -27,7 +28,8 @@ const catOf = (c: string | null | undefined) => (c && CAT[c]) || DEFAULT_CAT;
 /** Danh sách chuyên mục dùng cho ô chọn ở form quản trị */
 export const CATEGORIES = ["Hoạt động", "Tình nguyện", "Học tập", "Thể thao", "Thông báo"];
 
-/** Ảnh bìa theo chuyên mục: có link ảnh thì hiện ảnh; không thì nền gradient + icon + "Ảnh minh hoạ". */
+/** Ảnh bìa theo chuyên mục: có link ảnh thì hiện ảnh (tải lỗi thì tự rơi về nền gradient);
+ *  không có link thì nền gradient + icon + "Ảnh minh hoạ". */
 export function CategoryCover({
   a,
   className,
@@ -38,33 +40,30 @@ export function CategoryCover({
   big?: boolean;
 }) {
   const c = catOf(a.category);
-  const Icon = c.icon;
-  if (a.coverImage) {
-    return (
-      <div className={`relative overflow-hidden ${className ?? ""}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={a.coverImage} alt={a.title} className="h-full w-full object-cover" loading="lazy" />
-        {a.category && (
-          <span className="absolute left-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
-            {a.category}
-          </span>
-        )}
-      </div>
-    );
-  }
-  return (
-    <div
-      className={`relative grid place-items-center bg-gradient-to-br ${c.grad} text-white ${className ?? ""}`}
-    >
-      <Icon className={big ? "size-14 opacity-50" : "size-8 opacity-50"} />
+  const fallback = (
+    <div className={`relative grid h-full w-full place-items-center bg-gradient-to-br ${c.grad}`}>
+      {/* Logo trường làm ảnh đại diện mặc định (thay cho ô chữ) */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/logo-htu-tron-trang.png"
+        alt="Logo Trường Đại học Hà Tĩnh"
+        className={`${big ? "size-20 sm:size-24" : "size-12"} opacity-95 drop-shadow`}
+        loading="lazy"
+      />
       {a.category && (
         <span className="absolute left-3 top-3 rounded-full bg-black/30 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
           {a.category}
         </span>
       )}
-      <span className="absolute bottom-2.5 right-3 rounded bg-black/25 px-2 py-0.5 text-[10px] font-medium text-white/80">
-        Ảnh minh hoạ
-      </span>
+    </div>
+  );
+  return (
+    <div className={`relative overflow-hidden ${className ?? ""}`}>
+      {a.coverImage ? (
+        <CoverImage src={a.coverImage} alt={a.title} category={a.category} fallback={fallback} />
+      ) : (
+        fallback
+      )}
     </div>
   );
 }

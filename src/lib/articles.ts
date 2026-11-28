@@ -82,3 +82,34 @@ export async function getUpcomingPublicEvents(limit = 4) {
     select: { id: true, title: true, date: true, location: true },
   });
 }
+
+export type PublicEvent = {
+  id: string;
+  title: string;
+  date: Date;
+  location: string | null;
+};
+
+/** Trang /su-kien công khai: tối đa 5 sự kiện TOÀN TRƯỜNG sắp tới + 5 đã diễn ra */
+export async function getPublicEventLists(limit = 5): Promise<{
+  upcoming: PublicEvent[];
+  past: PublicEvent[];
+}> {
+  const today = startOfTodayVN(new Date());
+  const select = { id: true, title: true, date: true, location: true } as const;
+  const [upcoming, past] = await Promise.all([
+    prisma.event.findMany({
+      where: { faculty: null, date: { gte: today } },
+      orderBy: { date: "asc" },
+      take: limit,
+      select,
+    }),
+    prisma.event.findMany({
+      where: { faculty: null, date: { lt: today } },
+      orderBy: { date: "desc" },
+      take: limit,
+      select,
+    }),
+  ]);
+  return { upcoming, past };
+}

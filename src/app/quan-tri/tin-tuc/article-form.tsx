@@ -41,6 +41,7 @@ export function ArticleForm({
   const [content, setContent] = useState(initial?.content ?? "");
   const [busy, setBusy] = useState<null | "cover" | "body">(null);
   const [uploadErr, setUploadErr] = useState<string>("");
+  const [coverBroken, setCoverBroken] = useState(false);
 
   const coverInputRef = useRef<HTMLInputElement>(null);
   const bodyInputRef = useRef<HTMLInputElement>(null);
@@ -157,7 +158,10 @@ export function ArticleForm({
             name="coverImage"
             type="url"
             value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
+            onChange={(e) => {
+              setCoverImage(e.target.value);
+              setCoverBroken(false);
+            }}
             placeholder="Dán link ảnh, hoặc bấm Tải ảnh →"
             className={`h-10 flex-1 ${fieldClass} py-0`}
           />
@@ -184,25 +188,44 @@ export function ArticleForm({
           }}
         />
         {coverImage ? (
-          <div className="relative w-max">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={coverImage}
-              alt="Ảnh bìa"
-              className="h-28 rounded-lg border object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => setCoverImage("")}
-              className="absolute -right-2 -top-2 grid size-6 place-items-center rounded-full bg-destructive text-white shadow"
-              aria-label="Bỏ ảnh bìa"
-            >
-              <X className="size-3.5" />
-            </button>
+          <div className="flex flex-col gap-1.5">
+            <div className="relative w-max">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverImage}
+                alt="Ảnh bìa"
+                className={`h-28 rounded-lg border object-cover ${coverBroken ? "hidden" : ""}`}
+                onError={() => setCoverBroken(true)}
+                onLoad={() => setCoverBroken(false)}
+              />
+              {coverBroken && (
+                <div className="grid h-28 w-44 place-items-center rounded-lg border border-dashed border-destructive/60 bg-destructive/5 px-3 text-center text-[11px] font-medium text-destructive">
+                  Link này không phải ảnh
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setCoverImage("");
+                  setCoverBroken(false);
+                }}
+                className="absolute -right-2 -top-2 grid size-6 place-items-center rounded-full bg-destructive text-white shadow"
+                aria-label="Bỏ ảnh bìa"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+            {coverBroken && (
+              <p className="text-xs text-destructive">
+                Hãy dán <b>link ảnh trực tiếp</b> (kết thúc .jpg/.png/.webp) hoặc bấm <b>Tải ảnh</b> để
+                tải từ máy. Link bài báo không hiện được thành ảnh.
+              </p>
+            )}
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Tải ảnh từ máy hoặc dán link. Để trống thì bài hiện ô ảnh minh hoạ theo màu chuyên mục.
+            Tải ảnh từ máy hoặc dán <b>link ảnh trực tiếp</b> (.jpg/.png). Dán link bài báo sẽ không hiện
+            được. Để trống thì bài hiện ô ảnh minh hoạ theo màu chuyên mục.
           </p>
         )}
       </div>

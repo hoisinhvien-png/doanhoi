@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { LogIn } from "lucide-react";
 import { cn } from "cn";
 
-// Menu công khai. Sự kiện -> khối Hoạt động sắp tới ở trang chủ; Liên hệ -> chân trang.
+// Menu công khai.
 const MENU = [
   { href: "/", label: "Trang chủ" },
   { href: "/tin-tuc", label: "Tin tức" },
-  { href: "/#hoat-dong", label: "Sự kiện" },
-  { href: "/#lien-he", label: "Liên hệ" },
+  { href: "/su-kien", label: "Sự kiện" },
+  { href: "/lien-he", label: "Liên hệ" },
 ];
 
 /** Thanh đầu trang CÔNG KHAI (xanh đậm, có menu) — logo và cỡ chữ giống header trang trong. */
